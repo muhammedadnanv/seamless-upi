@@ -1,20 +1,92 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { QrCode, Download, Share2, CheckCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { QrCode, Download, Share2, CheckCircle, Mic } from 'lucide-react';
 import QRCode from 'qrcode';
 import { toast } from "@/components/ui/use-toast";
 
 const QrCodeGenerator: React.FC = () => {
-  const { activeUpiId, items, totalAmount, addTransaction } = useAppContext();
+  const { activeUpiId, items, totalAmount, addTransaction, setTotalAmount } = useAppContext();
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [upiUrl, setUpiUrl] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [customAmount, setCustomAmount] = useState<string>('');
+  const [showCustomAmount, setShowCustomAmount] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  useEffect(() => {
+    // Initialize speech recognition if supported
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onresult = (event) => {
+        const speechResult = event.results[0][0].transcript;
+        
+        // Try to extract the number from the speech
+        const numberMatch = speechResult.match(/\d+(\.\d+)?/);
+        if (numberMatch) {
+          const amount = parseFloat(numberMatch[0]);
+          if (!isNaN(amount)) {
+            setCustomAmount(amount.toString());
+            updateTotalAmount(amount);
+            toast({
+              title: "Voice Input Recognized",
+              description: `Amount set to ₹${amount}`,
+            });
+          } else {
+            toast({
+              title: "Voice Input Error",
+              description: "Could not recognize a valid amount",
+              variant: "destructive",
+            });
+          }
+        } else {
+          toast({
+            title: "Voice Input Error",
+            description: "No number detected in your speech",
+            variant: "destructive",
+          });
+        }
+        
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onerror = () => {
+        setIsListening(false);
+        toast({
+          title: "Voice Recognition Error",
+          description: "There was an error with voice recognition",
+          variant: "destructive",
+        });
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!activeUpiId) return;
+    
+    // Calculate the amount based on custom amount or items
+    const amountToUse = showCustomAmount && customAmount 
+      ? parseFloat(customAmount) 
+      : totalAmount;
     
     // Create the UPI URL
     const baseUrl = 'upi://pay';
@@ -22,12 +94,12 @@ const QrCodeGenerator: React.FC = () => {
     params.append('pa', activeUpiId.upiId); // UPI ID
     params.append('pn', activeUpiId.name); // Payee name
     
-    if (totalAmount > 0) {
-      params.append('am', totalAmount.toString()); // Amount
+    if (amountToUse > 0) {
+      params.append('am', amountToUse.toString()); // Amount
     }
     
     // Create a description from items if available
-    if (items.length > 0) {
+    if (items.length > 0 && !showCustomAmount) {
       const itemDescriptions = items.map(item => `${item.quantity}x ${item.name}`);
       params.append('tn', itemDescriptions.join(', ')); // Transaction note
     } else {
@@ -52,7 +124,56 @@ const QrCodeGenerator: React.FC = () => {
     .catch(err => {
       console.error('Error generating QR code:', err);
     });
-  }, [activeUpiId, items, totalAmount]);
+  }, [activeUpiId, items, totalAmount, customAmount, showCustomAmount]);
+
+  const startVoiceRecognition = () => {
+    if (!recognitionRef.current) {
+      toast({
+        title: "Voice Recognition Not Supported",
+        description: "Your browser doesn't support voice recognition",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      recognitionRef.current.start();
+      setIsListening(true);
+      toast({
+        title: "Listening...",
+        description: "Speak the amount you want to pay",
+      });
+    } catch (error) {
+      console.error("Error starting voice recognition:", error);
+      toast({
+        title: "Error",
+        description: "Could not start voice recognition",
+        variant: "destructive",
+      });
+      setIsListening(false);
+    }
+  };
+
+  const updateTotalAmount = (amount: number) => {
+    setShowCustomAmount(true);
+    setCustomAmount(amount.toString());
+  };
+
+  const resetToItemsAmount = () => {
+    setShowCustomAmount(false);
+    setCustomAmount('');
+  };
+
+  const handleManualAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCustomAmount(value);
+    
+    if (value && !isNaN(parseFloat(value))) {
+      setShowCustomAmount(true);
+    } else {
+      setShowCustomAmount(false);
+    }
+  };
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -90,10 +211,11 @@ const QrCodeGenerator: React.FC = () => {
   };
 
   const simulatePayment = () => {
-    if (items.length === 0 || totalAmount <= 0) {
+    if ((showCustomAmount && (!customAmount || parseFloat(customAmount) <= 0)) || 
+        (!showCustomAmount && (items.length === 0 || totalAmount <= 0))) {
       toast({
         title: "Cannot Process Payment",
-        description: "Please add items before processing payment",
+        description: "Please add items or specify a valid amount before processing payment",
         variant: "destructive"
       });
       return;
@@ -106,9 +228,9 @@ const QrCodeGenerator: React.FC = () => {
     
     // Create a new transaction
     const newTransaction = {
-      amount: totalAmount,
+      amount: showCustomAmount && customAmount ? parseFloat(customAmount) : totalAmount,
       status: 'pending' as const,
-      items: [...items],
+      items: showCustomAmount ? [] : [...items],
       upiId: activeUpiId?.upiId || '',
       timestamp: new Date(),
       reference: reference
@@ -185,8 +307,42 @@ const QrCodeGenerator: React.FC = () => {
         
         <div className="space-y-2 w-full">
           <div className="text-center">
-            <h3 className="font-medium">Scan to Pay ₹{totalAmount.toFixed(2)}</h3>
+            <h3 className="font-medium">
+              Scan to Pay ₹{showCustomAmount && customAmount ? parseFloat(customAmount).toFixed(2) : totalAmount.toFixed(2)}
+            </h3>
             <p className="text-sm text-muted-foreground">{activeUpiId.upiId}</p>
+          </div>
+          
+          <div className="mt-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <Input 
+                type="number" 
+                placeholder="Custom amount" 
+                value={customAmount}
+                onChange={handleManualAmountChange}
+                className="text-right"
+              />
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={startVoiceRecognition}
+                disabled={isListening}
+                className={isListening ? "bg-red-100" : ""}
+              >
+                <Mic className={`h-4 w-4 ${isListening ? "text-red-500 animate-pulse" : ""}`} />
+              </Button>
+            </div>
+            
+            {showCustomAmount && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={resetToItemsAmount}
+                className="w-full text-xs"
+              >
+                Reset to items total (₹{totalAmount.toFixed(2)})
+              </Button>
+            )}
           </div>
           
           <div className="flex justify-center space-x-2 mt-4">
@@ -214,7 +370,8 @@ const QrCodeGenerator: React.FC = () => {
             <Button 
               onClick={simulatePayment}
               className="w-full bg-green-600 hover:bg-green-700"
-              disabled={isProcessing || items.length === 0 || totalAmount <= 0}
+              disabled={isProcessing || 
+                (showCustomAmount ? (!customAmount || parseFloat(customAmount) <= 0) : (items.length === 0 || totalAmount <= 0))}
             >
               {isProcessing ? (
                 <>Processing Payment...</>
