@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UpiId, Item, Transaction } from '@/types';
 import { toast } from "@/components/ui/use-toast";
@@ -19,6 +18,7 @@ interface AppContextType {
   updateTransactionStatus: (id: string, status: Transaction['status']) => void;
   toggleAdminMode: () => void;
   totalAmount: number;
+  setTotalAmount: (amount: number) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -48,12 +48,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
 
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [customTotalAmount, setCustomTotalAmount] = useState<number | null>(null);
 
   // Calculate active UPI ID
   const activeUpiId = upiIds.find(upi => upi.isDefault) || upiIds[0] || null;
 
   // Calculate total amount based on items
-  const totalAmount = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const calculatedTotalAmount = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const totalAmount = customTotalAmount !== null ? customTotalAmount : calculatedTotalAmount;
+
+  // Function to set a custom total amount
+  const setTotalAmount = (amount: number) => {
+    setCustomTotalAmount(amount);
+  };
 
   // Save to localStorage whenever data changes
   useEffect(() => {
@@ -210,7 +217,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       addTransaction,
       updateTransactionStatus,
       toggleAdminMode,
-      totalAmount
+      totalAmount,
+      setTotalAmount
     }}>
       {children}
     </AppContext.Provider>
