@@ -1,13 +1,56 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from 'react';
+import { AppProvider } from '@/context/AppContext';
+import Header from '@/components/Header';
+import UpiIdManager from '@/components/UpiIdManager';
+import ItemManager from '@/components/ItemManager';
+import QrCodeGenerator from '@/components/QrCodeGenerator';
+import PaymentSummary from '@/components/PaymentSummary';
+import { Separator } from '@/components/ui/separator';
+import { useAppContext } from '@/context/AppContext';
+
+const MainContent = () => {
+  const { isAdmin } = useAppContext();
+
+  return (
+    <div className="container max-w-4xl mx-auto px-4 py-6">
+      <div className="space-y-6">
+        {isAdmin ? (
+          <>
+            <UpiIdManager />
+            <ItemManager />
+            <QrCodeGenerator />
+          </>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:order-2">
+              <QrCodeGenerator />
+            </div>
+            <div className="md:order-1">
+              <PaymentSummary />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <AppProvider>
+      <div className="min-h-screen bg-background flex flex-col">
+        <Header />
+        <main className="flex-1">
+          <MainContent />
+        </main>
+        <footer className="border-t py-4">
+          <div className="container max-w-4xl mx-auto px-4 text-center text-sm text-muted-foreground">
+            <p>© {new Date().getFullYear()} Seamless UPI – Secure and fast UPI payments</p>
+          </div>
+        </footer>
       </div>
-    </div>
+    </AppProvider>
   );
 };
 
