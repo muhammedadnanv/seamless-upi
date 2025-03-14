@@ -6,6 +6,7 @@ import UpiIdManager from '@/components/UpiIdManager';
 import ItemManager from '@/components/ItemManager';
 import QrCodeGenerator from '@/components/QrCodeGenerator';
 import PaymentSummary from '@/components/PaymentSummary';
+import TransactionHistory from '@/components/TransactionHistory';
 import { Separator } from '@/components/ui/separator';
 import { useAppContext } from '@/context/AppContext';
 
@@ -20,6 +21,7 @@ const MainContent = () => {
             <UpiIdManager />
             <ItemManager />
             <QrCodeGenerator />
+            <TransactionHistory />
           </>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

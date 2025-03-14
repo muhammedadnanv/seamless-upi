@@ -3,13 +3,15 @@ import React, { useEffect, useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { QrCode, Download, Share2 } from 'lucide-react';
+import { QrCode, Download, Share2, CheckCircle } from 'lucide-react';
 import QRCode from 'qrcode';
+import { toast } from "@/components/ui/use-toast";
 
 const QrCodeGenerator: React.FC = () => {
-  const { activeUpiId, items, totalAmount } = useAppContext();
+  const { activeUpiId, items, totalAmount, addTransaction } = useAppContext();
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [upiUrl, setUpiUrl] = useState<string>('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     if (!activeUpiId) return;
@@ -66,7 +68,10 @@ const QrCodeGenerator: React.FC = () => {
     } else {
       // Fallback for browsers that don't support Web Share API
       navigator.clipboard.writeText(upiUrl);
-      alert('Payment link copied to clipboard!');
+      toast({
+        title: "Link Copied",
+        description: "Payment link copied to clipboard!"
+      });
     }
   };
 
@@ -77,6 +82,68 @@ const QrCodeGenerator: React.FC = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
+    toast({
+      title: "QR Code Downloaded",
+      description: "The payment QR code has been downloaded successfully."
+    });
+  };
+
+  const simulatePayment = () => {
+    if (items.length === 0 || totalAmount <= 0) {
+      toast({
+        title: "Cannot Process Payment",
+        description: "Please add items before processing payment",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+    
+    // Generate a random reference number
+    const reference = `UPI${Math.floor(100000 + Math.random() * 900000)}`;
+    
+    // Create a new transaction
+    const newTransaction = {
+      amount: totalAmount,
+      status: 'pending' as const,
+      items: [...items],
+      upiId: activeUpiId?.upiId || '',
+      timestamp: new Date(),
+      reference: reference
+    };
+    
+    // Simulate payment processing with a delay
+    setTimeout(() => {
+      addTransaction(newTransaction);
+      
+      toast({
+        title: "Payment Initiated",
+        description: `Transaction reference: ${reference}`,
+      });
+      
+      // 80% chance of success for demo purposes
+      setTimeout(() => {
+        const success = Math.random() < 0.8;
+        
+        if (success) {
+          toast({
+            title: "Payment Successful",
+            description: "The transaction has been completed successfully!",
+            variant: "default"
+          });
+        } else {
+          toast({
+            title: "Payment Failed",
+            description: "The transaction could not be completed. Please try again.",
+            variant: "destructive"
+          });
+        }
+        
+        setIsProcessing(false);
+      }, 2000);
+    }, 1500);
   };
 
   if (!activeUpiId) {
@@ -127,7 +194,7 @@ const QrCodeGenerator: React.FC = () => {
               variant="outline" 
               onClick={handleDownload}
               className="flex items-center gap-1"
-              disabled={!qrDataUrl}
+              disabled={!qrDataUrl || isProcessing}
             >
               <Download className="h-4 w-4 mr-1" />
               Download
@@ -135,11 +202,32 @@ const QrCodeGenerator: React.FC = () => {
             <Button 
               onClick={handleShare}
               className="flex items-center gap-1"
-              disabled={!qrDataUrl}
+              disabled={!qrDataUrl || isProcessing}
             >
               <Share2 className="h-4 w-4 mr-1" />
               Share
             </Button>
+          </div>
+          
+          {/* Demo payment button - For demonstration purposes only */}
+          <div className="mt-6">
+            <Button 
+              onClick={simulatePayment}
+              className="w-full bg-green-600 hover:bg-green-700"
+              disabled={isProcessing || items.length === 0 || totalAmount <= 0}
+            >
+              {isProcessing ? (
+                <>Processing Payment...</>
+              ) : (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Simulate Payment (Demo)
+                </>
+              )}
+            </Button>
+            <p className="text-xs text-center text-muted-foreground mt-2">
+              This button simulates a payment for demonstration purposes
+            </p>
           </div>
         </div>
       </CardContent>
