@@ -9,6 +9,7 @@ import PaymentSummary from '@/components/PaymentSummary';
 import TransactionHistory from '@/components/TransactionHistory';
 import { Separator } from '@/components/ui/separator';
 import { useAppContext } from '@/context/AppContext';
+import { Phone } from 'lucide-react';
 
 const MainContent = () => {
   const { isAdmin } = useAppContext();
@@ -48,7 +49,14 @@ const Index = () => {
         </main>
         <footer className="border-t py-4">
           <div className="container max-w-4xl mx-auto px-4 text-center text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} Seamless UPI – Secure and fast UPI payments</p>
+            <div className="flex flex-col items-center gap-2">
+              <p>© {new Date().getFullYear()} Pull Kachavadam – Secure and fast UPI payments</p>
+              <p className="flex items-center gap-2">
+                <Phone className="h-4 w-4" />
+                Contact: +91 9656778508
+              </p>
+              <p className="text-xs mt-1">Build a similar platform for your business at an affordable price</p>
+            </div>
           </div>
         </footer>
       </div>
