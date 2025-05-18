@@ -1,14 +1,14 @@
+
 import React from 'react';
-import { AppProvider } from '@/context/AppContext';
 import Header from '@/components/Header';
 import UpiIdManager from '@/components/UpiIdManager';
 import ItemManager from '@/components/ItemManager';
 import QrCodeGenerator from '@/components/QrCodeGenerator';
 import PaymentSummary from '@/components/PaymentSummary';
 import TransactionHistory from '@/components/TransactionHistory';
-import { Separator } from '@/components/ui/separator';
 import { useAppContext } from '@/context/AppContext';
 import { Phone } from 'lucide-react';
+
 const MainContent = () => {
   const {
     isAdmin
@@ -31,23 +31,23 @@ const MainContent = () => {
       </div>
     </div>;
 };
+
 const Index = () => {
-  return <AppProvider>
-      <div className="min-h-screen bg-background flex flex-col">
-        <Header />
-        <main className="flex-1">
-          <MainContent />
-        </main>
-        <footer className="border-t py-4">
-          <div className="container max-w-4xl mx-auto px-4 text-center text-sm text-muted-foreground">
-            <div className="flex flex-col items-center gap-2">
-              
-              
-              <p className="text-xs mt-1">CodeCashier  by Muhammed Adnan  vv</p>
-            </div>
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <Header />
+      <main className="flex-1">
+        <MainContent />
+      </main>
+      <footer className="border-t py-4">
+        <div className="container max-w-4xl mx-auto px-4 text-center text-sm text-muted-foreground">
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-xs mt-1">CodeCashier  by Muhammed Adnan  vv</p>
           </div>
-        </footer>
-      </div>
-    </AppProvider>;
+        </div>
+      </footer>
+    </div>
+  );
 };
+
 export default Index;

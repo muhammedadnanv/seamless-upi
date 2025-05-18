@@ -8,16 +8,22 @@ import { useAppContext } from '@/context/AppContext';
 
 const Landing: React.FC = () => {
   const navigate = useNavigate();
-  const { setActiveUpiId } = useAppContext();
+  const { upiIds, addUpiId } = useAppContext();
   
   const handleGetStarted = () => {
-    // Set the default UPI ID and navigate to main page
-    setActiveUpiId({
-      id: "default",
-      name: "Muhammed Adnan",
-      upiId: "adnanmuhammad4393@okicici",
-      default: true,
-    });
+    // Check if the default UPI ID already exists
+    const existingUpi = upiIds.find(upi => upi.upiId === "adnanmuhammad4393@okicici");
+    
+    if (!existingUpi) {
+      // Add the default UPI ID if it doesn't exist
+      addUpiId({
+        upiId: "adnanmuhammad4393@okicici",
+        name: "Muhammed Adnan",
+        isDefault: true
+      });
+    }
+    
+    // Navigate to the main app
     navigate('/app');
   };
 
