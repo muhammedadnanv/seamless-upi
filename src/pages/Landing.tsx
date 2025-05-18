@@ -65,7 +65,7 @@ const Landing: React.FC = () => {
                     <HandCoins className="h-6 w-6 text-upi-green" />
                     Donation
                   </CardTitle>
-                  <CardDescription>Support ZapPay with your contribution</CardDescription>
+                  <CardDescription>Support CodeCashier with your contribution</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
                   <div className="mb-4">
