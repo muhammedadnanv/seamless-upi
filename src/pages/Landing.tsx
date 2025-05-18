@@ -1,19 +1,18 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { QrCode, Gift, HandCoins } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '@/context/AppContext';
-
 const Landing: React.FC = () => {
   const navigate = useNavigate();
-  const { upiIds, addUpiId } = useAppContext();
-  
+  const {
+    upiIds,
+    addUpiId
+  } = useAppContext();
   const handleGetStarted = () => {
     // Check if the default UPI ID already exists
     const existingUpi = upiIds.find(upi => upi.upiId === "adnanmuhammad4393@okicici");
-    
     if (!existingUpi) {
       // Add the default UPI ID if it doesn't exist
       addUpiId({
@@ -22,18 +21,16 @@ const Landing: React.FC = () => {
         isDefault: true
       });
     }
-    
+
     // Navigate to the main app
     navigate('/app');
   };
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2">
           <QrCode className="h-6 w-6 text-upi-blue" />
-          <h1 className="text-xl font-bold text-upi-blue">ZapPay</h1>
+          <h1 className="text-xl font-bold text-upi-blue">CodeCashier</h1>
         </div>
         <Button onClick={() => navigate('/app')} variant="outline">
           Open App
@@ -141,8 +138,6 @@ const Landing: React.FC = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
