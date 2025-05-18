@@ -12,7 +12,7 @@ const Header: React.FC = () => {
     <header className="flex items-center justify-between p-4 border-b">
       <div className="flex items-center gap-2">
         <QrCode className="h-6 w-6 text-upi-blue" />
-        <h1 className="text-xl font-bold text-upi-blue">Pull Kachavadam</h1>
+        <h1 className="text-xl font-bold text-upi-blue">PayEase</h1>
       </div>
       <div className="flex items-center gap-2">
         <Badge variant={isAdmin ? "outline" : "secondary"} className={isAdmin ? "bg-upi-blue text-white" : ""}>

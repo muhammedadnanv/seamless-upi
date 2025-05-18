@@ -50,7 +50,7 @@ const Index = () => {
         <footer className="border-t py-4">
           <div className="container max-w-4xl mx-auto px-4 text-center text-sm text-muted-foreground">
             <div className="flex flex-col items-center gap-2">
-              <p>© {new Date().getFullYear()} Pull Kachavadam – Secure and fast UPI payments</p>
+              <p>© {new Date().getFullYear()} PayEase – Secure and fast UPI payments</p>
               <p className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
                 Contact: +91 9656778508
