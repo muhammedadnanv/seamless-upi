@@ -97,7 +97,7 @@
 
 @layer components {
   .qr-container {
-    @apply p-4 bg-white rounded-lg shadow-md inline-block;
+    @apply p-2 sm:p-4 bg-white rounded-lg shadow-md inline-block;
   }
 
   .success-animation {
@@ -105,14 +105,14 @@
   }
 
   .payment-card {
-    @apply bg-white shadow-md rounded-lg p-4 md:p-6 transition-all duration-300 hover:shadow-lg;
+    @apply bg-white shadow-md rounded-lg p-3 sm:p-4 md:p-6 transition-all duration-300 hover:shadow-lg;
   }
 
   .upi-id-tag {
-    @apply inline-flex items-center px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium bg-upi-blue text-white;
+    @apply inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium bg-upi-blue text-white;
   }
 
   .item-card {
-    @apply border border-gray-200 rounded-lg p-3 md:p-4 mb-2 md:mb-3 hover:border-primary/50 transition-all;
+    @apply border border-gray-200 rounded-lg p-2 sm:p-3 md:p-4 mb-2 md:mb-3 hover:border-primary/50 transition-all;
   }
 }

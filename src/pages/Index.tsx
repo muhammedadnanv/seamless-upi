@@ -14,8 +14,8 @@ const MainContent = () => {
   } = useAppContext();
   
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-4 md:py-6">
-      <div className="space-y-4 md:space-y-6">
+    <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 sm:py-4 md:py-6">
+      <div className="space-y-3 sm:space-y-4 md:space-y-6">
         {isAdmin ? (
           <>
             <UpiIdManager />
@@ -24,7 +24,7 @@ const MainContent = () => {
             <TransactionHistory />
           </>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
             <div className="md:order-2">
               <QrCodeGenerator />
             </div>
@@ -45,8 +45,8 @@ const Index = () => {
       <main className="flex-1 overflow-x-hidden">
         <MainContent />
       </main>
-      <footer className="border-t py-3 md:py-4">
-        <div className="container max-w-4xl mx-auto px-4 text-center text-sm text-muted-foreground">
+      <footer className="border-t py-2 sm:py-3 md:py-4">
+        <div className="container max-w-4xl mx-auto px-3 sm:px-4 text-center text-xs sm:text-sm text-muted-foreground">
           <div className="flex flex-col items-center gap-1 md:gap-2">
             <p className="text-xs">CodeCashier by Muhammed Adnan</p>
           </div>
