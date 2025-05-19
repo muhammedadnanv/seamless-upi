@@ -95,22 +95,24 @@
   }
 }
 
-.qr-container {
-  @apply p-4 bg-white rounded-lg shadow-md inline-block;
-}
+@layer components {
+  .qr-container {
+    @apply p-4 bg-white rounded-lg shadow-md inline-block;
+  }
 
-.success-animation {
-  @apply transition-all duration-300 transform;
-}
+  .success-animation {
+    @apply transition-all duration-300 transform;
+  }
 
-.payment-card {
-  @apply bg-white shadow-md rounded-lg p-6 transition-all duration-300 hover:shadow-lg;
-}
+  .payment-card {
+    @apply bg-white shadow-md rounded-lg p-4 md:p-6 transition-all duration-300 hover:shadow-lg;
+  }
 
-.upi-id-tag {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-upi-blue text-white;
-}
+  .upi-id-tag {
+    @apply inline-flex items-center px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium bg-upi-blue text-white;
+  }
 
-.item-card {
-  @apply border border-gray-200 rounded-lg p-4 mb-3 hover:border-primary/50 transition-all;
+  .item-card {
+    @apply border border-gray-200 rounded-lg p-3 md:p-4 mb-2 md:mb-3 hover:border-primary/50 transition-all;
+  }
 }
