@@ -1,0 +1,223 @@
+
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { toast } from '@/hooks/use-toast';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Textarea } from '@/components/ui/textarea';
+import { useAppContext } from '@/context/AppContext';
+import { Send, Mail } from 'lucide-react';
+
+const emailSchema = z.object({
+  recipient: z.string().email({ message: "Please enter a valid email address" }),
+  subject: z.string().min(1, { message: "Subject cannot be empty" }),
+  message: z.string().min(1, { message: "Message cannot be empty" }),
+});
+
+const GmailIntegration = () => {
+  const [isConnected, setIsConnected] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const { selectedItems } = useAppContext();
+  
+  const form = useForm<z.infer<typeof emailSchema>>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: {
+      recipient: "",
+      subject: "Payment Receipt from CodeCashier",
+      message: "Thank you for your payment!",
+    },
+  });
+
+  const connectGmail = () => {
+    // In a real implementation, this would use OAuth to connect to Gmail
+    // For this demo, we'll simulate a successful connection
+    toast({
+      title: "Gmail Connected",
+      description: "Your Gmail account has been successfully connected.",
+    });
+    setIsConnected(true);
+  };
+
+  const disconnectGmail = () => {
+    toast({
+      title: "Gmail Disconnected",
+      description: "Your Gmail account has been disconnected.",
+    });
+    setIsConnected(false);
+  };
+  
+  const onSubmit = async (data: z.infer<typeof emailSchema>) => {
+    setIsSending(true);
+    
+    try {
+      // In a real implementation, this would send an actual email via Gmail API
+      // For this demo, we'll simulate sending an email
+      console.log("Sending email:", data);
+      
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      toast({
+        title: "Email Sent",
+        description: `Email to ${data.recipient} has been sent successfully.`,
+      });
+      
+      form.reset({
+        recipient: "",
+        subject: "Payment Receipt from CodeCashier",
+        message: "Thank you for your payment!",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send email. Please try again.",
+        variant: "destructive",
+      });
+      console.error("Email sending error:", error);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const generateReceiptTemplate = () => {
+    if (!selectedItems || selectedItems.length === 0) {
+      return "Thank you for your payment!";
+    }
+
+    const total = selectedItems.reduce((sum, item) => sum + (item.price || 0), 0);
+    const itemsList = selectedItems.map(item => `- ${item.name}: ₹${item.price || 0}`).join('\n');
+
+    return `Dear Customer,
+
+Thank you for your payment with CodeCashier!
+
+Items purchased:
+${itemsList}
+
+Total Amount: ₹${total}
+
+Your payment has been received successfully. If you have any questions about your purchase, please don't hesitate to contact us.
+
+Best regards,
+The CodeCashier Team`;
+  };
+
+  return (
+    <Card className="payment-card shadow-md">
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <Mail className="mr-2 h-5 w-5" />
+          Gmail Integration
+        </CardTitle>
+        <CardDescription>
+          Send payment receipts and notifications directly via Gmail
+        </CardDescription>
+      </CardHeader>
+      
+      <CardContent>
+        {!isConnected ? (
+          <div className="flex flex-col items-center space-y-4 py-4">
+            <p className="text-sm text-muted-foreground">Connect your Gmail account to send emails through CodeCashier</p>
+            <Button onClick={connectGmail} className="w-full">
+              <Mail className="mr-2 h-4 w-4" /> Connect Gmail Account
+            </Button>
+          </div>
+        ) : (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="recipient"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Recipient Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="customer@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="subject"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subject</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex justify-between items-center">
+                      <FormLabel>Message</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
+                            Use Receipt Template
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0">
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-start px-2 py-1.5 text-xs"
+                            onClick={() => form.setValue("message", generateReceiptTemplate())}
+                          >
+                            Insert Payment Receipt
+                          </Button>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <FormControl>
+                      <Textarea rows={6} className="resize-none" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="flex gap-2 justify-end pt-2">
+                <Button type="submit" disabled={isSending}>
+                  {isSending ? (
+                    <>Sending...</>
+                  ) : (
+                    <>
+                      <Send className="mr-2 h-4 w-4" /> Send Email
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        )}
+      </CardContent>
+      
+      {isConnected && (
+        <CardFooter className="flex justify-between border-t px-6 py-4">
+          <p className="text-xs text-muted-foreground">
+            Connected to Gmail
+          </p>
+          <Button variant="ghost" size="sm" onClick={disconnectGmail}>
+            Disconnect
+          </Button>
+        </CardFooter>
+      )}
+    </Card>
+  );
+};
+
+export default GmailIntegration;

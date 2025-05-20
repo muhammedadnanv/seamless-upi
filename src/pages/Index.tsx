@@ -6,6 +6,7 @@ import ItemManager from '@/components/ItemManager';
 import QrCodeGenerator from '@/components/QrCodeGenerator';
 import PaymentSummary from '@/components/PaymentSummary';
 import TransactionHistory from '@/components/TransactionHistory';
+import GmailIntegration from '@/components/GmailIntegration';
 import { useAppContext } from '@/context/AppContext';
 
 const MainContent = () => {
@@ -21,6 +22,7 @@ const MainContent = () => {
             <UpiIdManager />
             <ItemManager />
             <QrCodeGenerator />
+            <GmailIntegration />
             <TransactionHistory />
           </>
         ) : (
@@ -30,6 +32,9 @@ const MainContent = () => {
             </div>
             <div className="md:order-1">
               <PaymentSummary />
+              <div className="mt-3 sm:mt-4 md:mt-6">
+                <GmailIntegration />
+              </div>
             </div>
           </div>
         )}
