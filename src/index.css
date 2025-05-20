@@ -43,6 +43,12 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* UPI Colors */
+    --upi-blue: 221.2 83.2% 53.3%;
+    --upi-green: 142.1 76.2% 36.3%;
+    --upi-light: 210 40% 96.1%;
+    --upi-background: 210 50% 98%;
   }
 
   .dark {
@@ -82,6 +88,12 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* UPI Colors - Dark Mode */
+    --upi-blue: 217.2 91.2% 59.8%;
+    --upi-green: 142.1 70.6% 45.3%;
+    --upi-light: 217.2 32.6% 17.5%;
+    --upi-background: 222.2 84% 4.9%;
   }
 }
 
@@ -105,7 +117,7 @@
   }
 
   .payment-card {
-    @apply bg-white shadow-md rounded-lg p-3 sm:p-4 md:p-6 transition-all duration-300 hover:shadow-lg;
+    @apply bg-white dark:bg-gray-800 shadow-md rounded-lg p-3 sm:p-4 md:p-6 transition-all duration-300 hover:shadow-lg;
   }
 
   .upi-id-tag {
@@ -113,6 +125,6 @@
   }
 
   .item-card {
-    @apply border border-gray-200 rounded-lg p-2 sm:p-3 md:p-4 mb-2 md:mb-3 hover:border-primary/50 transition-all;
+    @apply border border-gray-200 dark:border-gray-700 rounded-lg p-2 sm:p-3 md:p-4 mb-2 md:mb-3 hover:border-primary/50 transition-all;
   }
 }

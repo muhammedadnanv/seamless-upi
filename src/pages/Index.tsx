@@ -40,12 +40,12 @@ const MainContent = () => {
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background dark:bg-gray-900 flex flex-col">
       <Header />
       <main className="flex-1 overflow-x-hidden">
         <MainContent />
       </main>
-      <footer className="border-t py-2 sm:py-3 md:py-4">
+      <footer className="border-t py-2 sm:py-3 md:py-4 dark:border-gray-800">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 text-center text-xs sm:text-sm text-muted-foreground">
           <div className="flex flex-col items-center gap-1 md:gap-2">
             <p className="text-xs">CodeCashier by Muhammed Adnan</p>
