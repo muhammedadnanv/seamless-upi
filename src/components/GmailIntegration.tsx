@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Textarea } from '@/components/ui/textarea';
 import { useAppContext } from '@/context/AppContext';
 import { Send, Mail } from 'lucide-react';
+import { sendEmail } from '@/utils/emailService';
 
 const emailSchema = z.object({
   recipient: z.string().email({ message: "Please enter a valid email address" }),
@@ -20,7 +21,7 @@ const emailSchema = z.object({
 });
 
 const GmailIntegration = () => {
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(true); // Default to connected since we're using Resend
   const [isSending, setIsSending] = useState(false);
   const { selectedItems } = useAppContext();
   
@@ -34,19 +35,17 @@ const GmailIntegration = () => {
   });
 
   const connectGmail = () => {
-    // In a real implementation, this would use OAuth to connect to Gmail
-    // For this demo, we'll simulate a successful connection
     toast({
-      title: "Gmail Connected",
-      description: "Your Gmail account has been successfully connected.",
+      title: "Email Service Connected",
+      description: "You can now send emails directly from CodeCashier.",
     });
     setIsConnected(true);
   };
 
   const disconnectGmail = () => {
     toast({
-      title: "Gmail Disconnected",
-      description: "Your Gmail account has been disconnected.",
+      title: "Email Service Disconnected",
+      description: "Email sending has been disabled.",
     });
     setIsConnected(false);
   };
@@ -55,27 +54,30 @@ const GmailIntegration = () => {
     setIsSending(true);
     
     try {
-      // In a real implementation, this would send an actual email via Gmail API
-      // For this demo, we'll simulate sending an email
-      console.log("Sending email:", data);
-      
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast({
-        title: "Email Sent",
-        description: `Email to ${data.recipient} has been sent successfully.`,
+      const result = await sendEmail({
+        to: data.recipient,
+        subject: data.subject,
+        text: data.message
       });
       
-      form.reset({
-        recipient: "",
-        subject: "Payment Receipt from CodeCashier",
-        message: "Thank you for your payment!",
-      });
+      if (result.success) {
+        toast({
+          title: "Email Sent",
+          description: `Email to ${data.recipient} has been sent successfully.`,
+        });
+        
+        form.reset({
+          recipient: "",
+          subject: "Payment Receipt from CodeCashier",
+          message: "Thank you for your payment!",
+        });
+      } else {
+        throw new Error(result.message);
+      }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to send email. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to send email. Please try again.",
         variant: "destructive",
       });
       console.error("Email sending error:", error);
@@ -89,8 +91,8 @@ const GmailIntegration = () => {
       return "Thank you for your payment!";
     }
 
-    const total = selectedItems.reduce((sum, item) => sum + (item.price || 0), 0);
-    const itemsList = selectedItems.map(item => `- ${item.name}: ₹${item.price || 0}`).join('\n');
+    const total = selectedItems.reduce((sum, item) => sum + (item.price * item.quantity || 0), 0);
+    const itemsList = selectedItems.map(item => `- ${item.name}: ₹${item.price || 0} x ${item.quantity} = ₹${(item.price * item.quantity) || 0}`).join('\n');
 
     return `Dear Customer,
 
@@ -112,19 +114,19 @@ The CodeCashier Team`;
       <CardHeader>
         <CardTitle className="flex items-center">
           <Mail className="mr-2 h-5 w-5" />
-          Gmail Integration
+          Email Integration
         </CardTitle>
         <CardDescription>
-          Send payment receipts and notifications directly via Gmail
+          Send payment receipts and notifications directly via email
         </CardDescription>
       </CardHeader>
       
       <CardContent>
         {!isConnected ? (
           <div className="flex flex-col items-center space-y-4 py-4">
-            <p className="text-sm text-muted-foreground">Connect your Gmail account to send emails through CodeCashier</p>
+            <p className="text-sm text-muted-foreground">Connect the email service to send emails through CodeCashier</p>
             <Button onClick={connectGmail} className="w-full">
-              <Mail className="mr-2 h-4 w-4" /> Connect Gmail Account
+              <Mail className="mr-2 h-4 w-4" /> Connect Email Service
             </Button>
           </div>
         ) : (
@@ -209,7 +211,7 @@ The CodeCashier Team`;
       {isConnected && (
         <CardFooter className="flex justify-between border-t px-6 py-4">
           <p className="text-xs text-muted-foreground">
-            Connected to Gmail
+            Connected to Email Service
           </p>
           <Button variant="ghost" size="sm" onClick={disconnectGmail}>
             Disconnect

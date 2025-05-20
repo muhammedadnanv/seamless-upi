@@ -19,6 +19,8 @@ interface AppContextType {
   toggleAdminMode: () => void;
   totalAmount: number;
   setTotalAmount: (amount: number) => void;
+  selectedItems: Item[];
+  setSelectedItems: (items: Item[]) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -201,6 +203,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  const [selectedItems, setSelectedItems] = useState<Item[]>(() => {
+    return items.filter(item => item.quantity > 0);
+  });
+
+  useEffect(() => {
+    // Update selectedItems when items change
+    setSelectedItems(items.filter(item => item.quantity > 0));
+  }, [items]);
+
   return (
     <AppContext.Provider value={{
       upiIds,
@@ -218,7 +229,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       updateTransactionStatus,
       toggleAdminMode,
       totalAmount,
-      setTotalAmount
+      setTotalAmount,
+      selectedItems,
+      setSelectedItems
     }}>
       {children}
     </AppContext.Provider>
