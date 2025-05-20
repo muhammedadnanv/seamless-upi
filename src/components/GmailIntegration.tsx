@@ -54,6 +54,11 @@ const GmailIntegration = () => {
     setIsSending(true);
     
     try {
+      toast({
+        title: "Sending Email",
+        description: "Please wait while we send your email...",
+      });
+      
       const htmlContent = formatEmailAsHtml(data.message);
       
       const result = await sendEmail({
@@ -224,7 +229,7 @@ The CodeCashier Team`;
       {isConnected && (
         <CardFooter className="flex justify-between border-t px-6 py-4">
           <p className="text-xs text-muted-foreground">
-            Connected to Email Service
+            Connected to Email Service (Resend)
           </p>
           <Button variant="ghost" size="sm" onClick={disconnectGmail}>
             Disconnect

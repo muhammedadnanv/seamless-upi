@@ -16,6 +16,8 @@ const RESEND_API_KEY = 're_BKN5qBAk_AyXqWP1JGharRXhtezZNCiM4';
  */
 export const sendEmail = async ({ to, subject, text, html }: SendEmailParams): Promise<{ success: boolean, message: string }> => {
   try {
+    console.log('Sending email to:', to);
+    
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
