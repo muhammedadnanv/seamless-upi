@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { QrCode, Gift, HandCoins, Zap, ShieldCheck, Star } from 'lucide-react';
+import { QrCode, Gift, HandCoins, Zap, ShieldCheck, Star, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '@/context/AppContext';
 import { useTheme } from '@/components/ThemeProvider';

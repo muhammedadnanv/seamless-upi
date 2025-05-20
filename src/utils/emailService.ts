@@ -3,11 +3,18 @@ interface SendEmailParams {
   to: string;
   subject: string;
   text: string;
+  html?: string;
 }
 
+// This is a publishable API key for Resend
 const RESEND_API_KEY = 're_BKN5qBAk_AyXqWP1JGharRXhtezZNCiM4';
 
-export const sendEmail = async ({ to, subject, text }: SendEmailParams): Promise<{ success: boolean, message: string }> => {
+/**
+ * Sends an email using the Resend API
+ * @param params Email parameters (to, subject, text)
+ * @returns Promise with success status and message
+ */
+export const sendEmail = async ({ to, subject, text, html }: SendEmailParams): Promise<{ success: boolean, message: string }> => {
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -19,7 +26,8 @@ export const sendEmail = async ({ to, subject, text }: SendEmailParams): Promise
         from: 'CodeCashier <receipts@codecashier.app>',
         to: [to],
         subject,
-        text
+        text,
+        html: html || undefined
       })
     });
 
@@ -33,6 +41,7 @@ export const sendEmail = async ({ to, subject, text }: SendEmailParams): Promise
       };
     }
 
+    console.log('Email sent successfully:', data);
     return { 
       success: true,
       message: 'Email sent successfully'
@@ -41,7 +50,7 @@ export const sendEmail = async ({ to, subject, text }: SendEmailParams): Promise
     console.error('Error sending email:', error);
     return { 
       success: false,
-      message: 'An unexpected error occurred'
+      message: error instanceof Error ? error.message : 'An unexpected error occurred'
     };
   }
 };

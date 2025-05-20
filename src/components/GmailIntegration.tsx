@@ -11,7 +11,7 @@ import { toast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { useAppContext } from '@/context/AppContext';
-import { Send, Mail } from 'lucide-react';
+import { Send, Mail, MailOpen } from 'lucide-react';
 import { sendEmail } from '@/utils/emailService';
 
 const emailSchema = z.object({
@@ -23,7 +23,7 @@ const emailSchema = z.object({
 const GmailIntegration = () => {
   const [isConnected, setIsConnected] = useState(true); // Default to connected since we're using Resend
   const [isSending, setIsSending] = useState(false);
-  const { selectedItems } = useAppContext();
+  const { selectedItems, totalAmount } = useAppContext();
   
   const form = useForm<z.infer<typeof emailSchema>>({
     resolver: zodResolver(emailSchema),
@@ -54,10 +54,13 @@ const GmailIntegration = () => {
     setIsSending(true);
     
     try {
+      const htmlContent = formatEmailAsHtml(data.message);
+      
       const result = await sendEmail({
         to: data.recipient,
         subject: data.subject,
-        text: data.message
+        text: data.message,
+        html: htmlContent
       });
       
       if (result.success) {
@@ -76,7 +79,7 @@ const GmailIntegration = () => {
       }
     } catch (error) {
       toast({
-        title: "Error",
+        title: "Email Sending Failed",
         description: error instanceof Error ? error.message : "Failed to send email. Please try again.",
         variant: "destructive",
       });
@@ -86,13 +89,23 @@ const GmailIntegration = () => {
     }
   };
 
+  // Format email as HTML for better presentation
+  const formatEmailAsHtml = (text: string): string => {
+    // Convert line breaks to HTML breaks
+    return text
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>')
+      .replace(/^(.*)$/m, '<p>$1</p>');
+  };
+
   const generateReceiptTemplate = () => {
     if (!selectedItems || selectedItems.length === 0) {
       return "Thank you for your payment!";
     }
 
-    const total = selectedItems.reduce((sum, item) => sum + (item.price * item.quantity || 0), 0);
-    const itemsList = selectedItems.map(item => `- ${item.name}: ₹${item.price || 0} x ${item.quantity} = ₹${(item.price * item.quantity) || 0}`).join('\n');
+    const itemsList = selectedItems
+      .map(item => `- ${item.name}: ₹${item.price.toFixed(2)} x ${item.quantity} = ₹${(item.price * item.quantity).toFixed(2)}`)
+      .join('\n');
 
     return `Dear Customer,
 
@@ -101,7 +114,7 @@ Thank you for your payment with CodeCashier!
 Items purchased:
 ${itemsList}
 
-Total Amount: ₹${total}
+Total Amount: ₹${totalAmount.toFixed(2)}
 
 Your payment has been received successfully. If you have any questions about your purchase, please don't hesitate to contact us.
 
