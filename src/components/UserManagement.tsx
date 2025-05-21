@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -136,7 +135,7 @@ const UserManagement: React.FC = () => {
                       <div>
                         <p className="font-bold text-lg flex items-center gap-2">
                           {user.name}
-                          {user.auth_id === userData?.auth_id && (
+                          {user.auth_id === userData?.id && (
                             <span className="text-xs bg-gray-100 dark:bg-gray-800 text-muted-foreground px-2 py-0.5 rounded">
                               You
                             </span>
