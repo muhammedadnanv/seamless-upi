@@ -14,5 +14,51 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <div id="widgetify-whatsapp" 
+       style="position: fixed; 
+              bottom: 20px; 
+              right: 20px;
+              z-index: 9999;">
+      <!-- Widgetify whatsapp Widget -->
+    </div>
+
+    <script>
+      (function() {
+        const widget = document.createElement('div');
+        widget.innerHTML = `
+          <div style="width: 60px; 
+                      height: 60px; 
+                      background-color: #25D366; 
+                      border-radius: 50%; 
+                      display: flex; 
+                      justify-content: center; 
+                      align-items: center;
+                      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                      cursor: pointer;
+                      transition: transform 0.3s ease, box-shadow 0.3s ease;"
+               onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 16px rgba(0, 0, 0, 0.2)';"
+               onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.15)';"
+               onclick="handleWidgetClick()"
+               class="widgetify-button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.6 6.32A7.85 7.85 0 0 0 12 4.02a7.95 7.95 0 0 0-6.9 12.07L4 20.02l4.05-1.06A8.02 8.02 0 0 0 12 20.02a7.98 7.98 0 0 0 8-7.93c0-2.12-.83-4.12-2.4-5.62V6.32zm-5.6 12.2c-1.18 0-2.33-.32-3.33-.92l-.24-.14-2.47.65.66-2.41-.16-.25a6.63 6.63 0 0 1-1.02-3.52 6.57 6.57 0 0 1 11.29-4.57 6.45 6.45 0 0 1 2 4.55 6.57 6.57 0 0 1-6.57 6.57l-.16.04zm3.6-4.93c-.2-.1-1.17-.58-1.35-.64-.18-.06-.31-.1-.44.1-.13.2-.5.64-.61.77-.11.13-.23.15-.42.05-.2-.1-.84-.31-1.6-.99-.59-.52-.99-1.17-1.1-1.37-.12-.2-.01-.31.09-.41.09-.09.2-.23.3-.35.1-.12.13-.2.2-.33.07-.13.03-.24-.02-.34-.05-.1-.44-1.06-.6-1.45-.16-.38-.32-.33-.44-.33-.11 0-.24-.02-.37-.02-.13 0-.34.05-.52.25-.18.2-.68.67-.68 1.62 0 .96.7 1.88.8 2 .1.14 1.4 2.16 3.42 3.02.48.2.85.33 1.14.43.48.15.91.13 1.26.08.38-.06 1.17-.48 1.33-.94.17-.46.17-.86.12-.94-.05-.08-.18-.12-.37-.21z" fill="white"/>
+        </svg>
+          </div>
+        `;
+
+        document.getElementById('widgetify-whatsapp').appendChild(widget);
+
+        window.handleWidgetClick = function() {
+          window.open('https://wa.me/9656778508?text=I%20needed%20a%20Support%20%20for%20%20CodeCashier', '_blank');
+        }
+      })();
+    </script>
+
+    <div style="position: fixed; bottom: 5px; right: 20px; font-size: 10px; text-align: center; opacity: 0.7; z-index: 9998;">
+      <a href="https://widgetify-two.vercel.app/" target="_blank" style="color: #666; text-decoration: none;">
+        Powered by Widgetify
+      </a>
+    </div>
   </body>
 </html>
