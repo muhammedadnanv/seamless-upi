@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import QRCode from 'qrcode';
+
 const Header: React.FC = () => {
   const {
     isAdmin,
@@ -16,10 +18,12 @@ const Header: React.FC = () => {
     activeUpiId,
     addUpiId
   } = useAppContext();
+  
   const {
     theme,
     setTheme
   } = useTheme();
+  
   const [showNotifications, setShowNotifications] = useState(false);
   const [showDonationQR, setShowDonationQR] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
@@ -69,11 +73,13 @@ const Header: React.FC = () => {
       setShowDonationQR(true);
     }, 500);
   };
+
   return <header className="flex items-center justify-between p-2 sm:p-3 md:p-4 border-b shadow-sm">
       <div className="flex items-center gap-1 sm:gap-2">
         <QrCode className="h-5 w-5 md:h-6 md:w-6 text-upi-blue" />
         <h1 className="text-base sm:text-lg md:text-xl font-bold text-upi-blue">CodeCashier</h1>
       </div>
+      
       <div className="flex items-center gap-1 sm:gap-2">
         {/* Donation Button */}
         <Button variant="outline" size="sm" onClick={() => setShowDonationQR(true)} className="hidden sm:flex items-center gap-1 border-upi-green text-upi-green hover:bg-upi-green/10">
@@ -87,7 +93,18 @@ const Header: React.FC = () => {
         </Button>
 
         {/* Theme Toggle */}
-        
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="rounded-full h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        >
+          {theme === 'dark' ? (
+            <Sun className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+          ) : (
+            <Moon className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+          )}
+        </Button>
         
         {/* Notifications */}
         <Popover>
@@ -117,13 +134,14 @@ const Header: React.FC = () => {
           </PopoverContent>
         </Popover>
         
-        {/* User Profile */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            
-          </DropdownMenuTrigger>
-          
-        </DropdownMenu>
+        {/* User Profile - Adding an empty User icon button for symmetry */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="rounded-full h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        >
+          <User className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+        </Button>
 
         <Badge variant={isAdmin ? "outline" : "secondary"} className={`${isAdmin ? "bg-upi-blue text-white" : ""} text-xs sm:text-sm`}>
           {isAdmin ? "Admin Mode" : "User Mode"}
