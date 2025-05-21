@@ -11,7 +11,7 @@ import { toast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { useAppContext } from '@/context/AppContext';
-import { Send, Mail, MailOpen } from 'lucide-react';
+import { Send, Mail } from 'lucide-react';
 import { sendEmail } from '@/utils/emailService';
 
 const emailSchema = z.object({
@@ -96,11 +96,38 @@ const GmailIntegration = () => {
 
   // Format email as HTML for better presentation
   const formatEmailAsHtml = (text: string): string => {
-    // Convert line breaks to HTML breaks
-    return text
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br>')
-      .replace(/^(.*)$/m, '<p>$1</p>');
+    // First wrap the content in proper HTML structure
+    const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background-color: #f8f9fa; padding: 15px; text-align: center; }
+    .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #777; }
+    .item { margin: 5px 0; }
+    .total { margin-top: 15px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>CodeCashier Receipt</h2>
+    </div>
+    <div class="content">
+      ${text
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/^(.*)$/m, '<p>$1</p>')}
+    </div>
+    <div class="footer">
+      <p>Thank you for using CodeCashier!</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    return htmlContent;
   };
 
   const generateReceiptTemplate = () => {

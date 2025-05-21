@@ -18,6 +18,16 @@ export const sendEmail = async ({ to, subject, text, html }: SendEmailParams): P
   try {
     console.log('Sending email to:', to);
     
+    // Validate email address format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(to)) {
+      console.error('Invalid email address format:', to);
+      return {
+        success: false,
+        message: 'Invalid email address format'
+      };
+    }
+    
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
