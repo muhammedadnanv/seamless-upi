@@ -1,12 +1,11 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { QrCode, Gift, HandCoins, Zap, ShieldCheck, Star, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '@/context/AppContext';
 import { useTheme } from '@/components/ThemeProvider';
-import { useAuth } from '@/context/AuthContext';
 
 const Landing: React.FC = () => {
   const navigate = useNavigate();
@@ -20,15 +19,6 @@ const Landing: React.FC = () => {
     addUpiId
   } = useAppContext();
   
-  const { isAuthenticated } = useAuth();
-
-  // Redirect authenticated users to app
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/app');
-    }
-  }, [isAuthenticated, navigate]);
-  
   const handleGetStarted = () => {
     // Check if the default UPI ID already exists
     const existingUpi = upiIds.find(upi => upi.upiId === "adnanmuhammad4393@okicici");
@@ -41,8 +31,8 @@ const Landing: React.FC = () => {
       });
     }
 
-    // Navigate to the auth page
-    navigate('/auth');
+    // Navigate directly to the app page
+    navigate('/app');
   };
   
   return <div className="min-h-screen flex flex-col">
@@ -56,8 +46,8 @@ const Landing: React.FC = () => {
           <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="rounded-full">
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           </Button>
-          <Button onClick={() => navigate('/auth')} variant="outline" size="sm" className="text-xs sm:text-sm">
-            {isAuthenticated ? 'Open App' : 'Login / Register'}
+          <Button onClick={() => navigate('/app')} variant="outline" size="sm" className="text-xs sm:text-sm">
+            Open App
           </Button>
         </div>
       </header>
@@ -82,8 +72,6 @@ const Landing: React.FC = () => {
                 </Button>
               </div>
             </div>
-            
-            
           </div>
         </div>
       </section>

@@ -1,9 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Users, UserPlus, Mail, ShieldCheck } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth, UserRole } from '@/context/AuthContext';
 import { toast } from '@/components/ui/use-toast';
 import {
@@ -32,48 +32,49 @@ interface AppUser {
 }
 
 const UserManagement: React.FC = () => {
-  const [users, setUsers] = useState<AppUser[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<AppUser[]>([
+    {
+      id: '1',
+      auth_id: '1',
+      email: 'owner@example.com',
+      name: 'Owner User',
+      role: 'owner'
+    },
+    {
+      id: '2',
+      auth_id: '2',
+      email: 'manager@example.com',
+      name: 'Manager User',
+      role: 'manager'
+    },
+    {
+      id: '3',
+      auth_id: '3',
+      email: 'cashier@example.com',
+      name: 'Cashier User',
+      role: 'cashier'
+    },
+    {
+      id: '4',
+      auth_id: '4',
+      email: 'viewer@example.com',
+      name: 'Viewer User',
+      role: 'viewer'
+    }
+  ]);
+  const [loading, setLoading] = useState(false);
   const [editingUser, setEditingUser] = useState<AppUser | null>(null);
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
   const { userData } = useAuth();
-
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('app_users')
-        .select('*')
-        .order('role', { ascending: true });
-
-      if (error) throw error;
-      setUsers(data as AppUser[]);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      toast({
-        title: 'Failed to load users',
-        description: 'Please try again later.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   const handleRoleChange = async () => {
     if (!editingUser || !selectedRole) return;
 
     try {
-      const { error } = await supabase
-        .from('app_users')
-        .update({ role: selectedRole })
-        .eq('id', editingUser.id);
-
-      if (error) throw error;
+      // Update user role locally
+      setUsers(users.map(user => 
+        user.id === editingUser.id ? { ...user, role: selectedRole } : user
+      ));
 
       toast({
         title: 'Role updated',
@@ -82,7 +83,6 @@ const UserManagement: React.FC = () => {
 
       setEditingUser(null);
       setSelectedRole(null);
-      fetchUsers();
     } catch (error) {
       console.error('Error updating role:', error);
       toast({
@@ -152,7 +152,7 @@ const UserManagement: React.FC = () => {
                     </div>
                     
                     {/* Only show edit button if current user is owner and not editing themselves */}
-                    {userData?.role === 'owner' && userData.id !== user.id && (
+                    {userData?.role === 'owner' && userData.id !== user.auth_id && (
                       <Button
                         size="sm"
                         variant="outline"
