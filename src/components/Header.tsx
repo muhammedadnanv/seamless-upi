@@ -1,14 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { QrCode, Settings, BellRing, Sun, Moon, User, Gift } from 'lucide-react';
+import { QrCode, Settings, BellRing, Sun, Moon, User, Gift, LogOut } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import QRCode from 'qrcode';
+import { useAuth, UserRole } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const {
@@ -23,6 +24,9 @@ const Header: React.FC = () => {
     theme,
     setTheme
   } = useTheme();
+
+  const { user, userData, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showDonationQR, setShowDonationQR] = useState(false);
@@ -77,12 +81,58 @@ const Header: React.FC = () => {
     }, 500);
   };
 
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  // Function to get role badge color
+  const getRoleBadgeColor = (role: UserRole) => {
+    switch (role) {
+      case 'owner':
+        return 'bg-purple-500 text-white';
+      case 'manager':
+        return 'bg-blue-500 text-white';
+      case 'cashier':
+        return 'bg-green-500 text-white';
+      case 'viewer':
+        return 'bg-gray-500 text-white';
+      default:
+        return 'bg-gray-200 text-gray-800';
+    }
+  };
+
   return <header className="flex items-center justify-between p-2 sm:p-3 md:p-4 border-b shadow-sm">
       <div className="flex items-center gap-1 sm:gap-2">
         <QrCode className="h-5 w-5 md:h-6 md:w-6 text-upi-blue" />
         <h1 className="text-base sm:text-lg md:text-xl font-bold text-upi-blue">CodeCashier</h1>
       </div>
       <div className="flex items-center gap-1 sm:gap-2">
+        {/* User Profile */}
+        {userData && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <User className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{userData.name}</span>
+                {userData.role && (
+                  <Badge variant="outline" className={getRoleBadgeColor(userData.role)}>
+                    {userData.role}
+                  </Badge>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>{userData.email}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-500 cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
         {/* Donation Button */}
         <Button 
           variant="outline"
@@ -137,20 +187,17 @@ const Header: React.FC = () => {
           </PopoverContent>
         </Popover>
         
-        {/* User Profile */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            
-          </DropdownMenuTrigger>
-          
-        </DropdownMenu>
-
-        <Badge variant={isAdmin ? "outline" : "secondary"} className={`${isAdmin ? "bg-upi-blue text-white" : ""} text-xs sm:text-sm`}>
-          {isAdmin ? "Admin Mode" : "User Mode"}
-        </Badge>
-        <Button variant="ghost" size="icon" onClick={toggleAdminMode} className="rounded-full h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-          <Settings className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-        </Button>
+        {/* Admin Mode Toggle */}
+        {userData && (userData.role === 'owner' || userData.role === 'manager') && (
+          <>
+            <Badge variant={isAdmin ? "outline" : "secondary"} className={`${isAdmin ? "bg-upi-blue text-white" : ""} text-xs sm:text-sm`}>
+              {isAdmin ? "Admin Mode" : "User Mode"}
+            </Badge>
+            <Button variant="ghost" size="icon" onClick={toggleAdminMode} className="rounded-full h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <Settings className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+            </Button>
+          </>
+        )}
       </div>
 
       {/* Donation QR Code Dialog */}
