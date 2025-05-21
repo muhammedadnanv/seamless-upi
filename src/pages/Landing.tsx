@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,15 +5,16 @@ import { QrCode, Gift, HandCoins, Zap, ShieldCheck, Star, Sun, Moon } from 'luci
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '@/context/AppContext';
 import { useTheme } from '@/components/ThemeProvider';
-
 const Landing: React.FC = () => {
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
+  const {
+    theme,
+    setTheme
+  } = useTheme();
   const {
     upiIds,
     addUpiId
   } = useAppContext();
-  
   const handleGetStarted = () => {
     // Check if the default UPI ID already exists
     const existingUpi = upiIds.find(upi => upi.upiId === "adnanmuhammad4393@okicici");
@@ -30,9 +30,7 @@ const Landing: React.FC = () => {
     // Navigate to the main app
     navigate('/app');
   };
-  
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between p-3 sm:p-4 md:p-5 border-b">
         <div className="flex items-center gap-1 sm:gap-2">
@@ -40,12 +38,7 @@ const Landing: React.FC = () => {
           <h1 className="text-base sm:text-lg md:text-xl font-bold text-upi-blue">CodeCashier</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="rounded-full"
-          >
+          <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="rounded-full">
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           </Button>
           <Button onClick={() => navigate('/app')} variant="outline" size="sm" className="text-xs sm:text-sm">
@@ -69,50 +62,13 @@ const Landing: React.FC = () => {
                 Generate UPI QR codes instantly, manage transactions, and receive payments effortlessly.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start">
-                <Button 
-                  size="lg" 
-                  onClick={handleGetStarted} 
-                  className="bg-upi-blue hover:bg-upi-blue/90 shadow-md hover:shadow-lg transition-all"
-                >
+                <Button size="lg" onClick={handleGetStarted} className="bg-upi-blue hover:bg-upi-blue/90 shadow-md hover:shadow-lg transition-all">
                   Get Started
                 </Button>
               </div>
             </div>
             
-            <div className="flex justify-center md:justify-end">
-              <Card className="w-full max-w-xs sm:max-w-sm md:max-w-md border-2 border-upi-blue/10 shadow-lg transform transition-all hover:shadow-xl">
-                <CardHeader className="text-center space-y-1 p-4 sm:p-6">
-                  <CardTitle className="text-lg sm:text-xl md:text-2xl flex items-center justify-center gap-1 sm:gap-2">
-                    <HandCoins className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-upi-green" />
-                    Donation
-                  </CardTitle>
-                  <CardDescription>Support CodeCashier with your contribution</CardDescription>
-                </CardHeader>
-                <CardContent className="text-center p-4 sm:p-6 pt-0">
-                  <div className="mb-3 sm:mb-4">
-                    <span className="text-2xl sm:text-3xl md:text-4xl font-bold">₹199</span>
-                    <span className="text-muted-foreground ml-1 sm:ml-2 text-xs sm:text-sm">one-time</span>
-                  </div>
-                  <div className="rounded-md bg-muted p-2 sm:p-3 mb-3 sm:mb-4">
-                    <p className="font-medium text-sm sm:text-base">UPI ID</p>
-                    <p className="text-xs sm:text-sm md:text-lg select-all break-all">adnanmuhammad4393@okicici</p>
-                  </div>
-                  <div className="text-xs sm:text-sm text-muted-foreground">
-                    <p>Transfer directly to support the development</p>
-                    <p>or use the app to generate a QR code</p>
-                  </div>
-                </CardContent>
-                <CardFooter className="p-4 sm:p-6 pt-0">
-                  <Button 
-                    className="w-full bg-upi-green hover:bg-upi-green/90 shadow-sm hover:shadow-md transition-all text-xs sm:text-sm" 
-                    onClick={handleGetStarted}
-                  >
-                    <Gift className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                    Open App & Donate
-                  </Button>
-                </CardFooter>
-              </Card>
-            </div>
+            
           </div>
         </div>
       </section>
@@ -171,8 +127,6 @@ const Landing: React.FC = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
