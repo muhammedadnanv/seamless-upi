@@ -62,9 +62,7 @@ const Header: React.FC = () => {
         {/* User Profile */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-              <User className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-            </Button>
+            
           </DropdownMenuTrigger>
           
         </DropdownMenu>
