@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
@@ -9,8 +8,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import QRCode from 'qrcode';
-import { useAuth, UserRole } from '@/context/AuthContext';
-
 const Header: React.FC = () => {
   const {
     isAdmin,
@@ -19,26 +16,22 @@ const Header: React.FC = () => {
     activeUpiId,
     addUpiId
   } = useAppContext();
-
   const {
     theme,
     setTheme
   } = useTheme();
-
-  const { userData } = useAuth();
-
   const [showNotifications, setShowNotifications] = useState(false);
   const [showDonationQR, setShowDonationQR] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
-  
+
   // Get recent notifications (last 3 transactions)
   const recentNotifications = transactions.slice(0, 3).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  
+
   // Generate donation QR code when dialog opens
   React.useEffect(() => {
     if (showDonationQR && activeUpiId) {
       const donationAmount = 199; // Fixed donation amount
-      
+
       // Create the UPI URL for donation
       const baseUrl = 'upi://pay';
       const params = new URLSearchParams();
@@ -46,9 +39,8 @@ const Header: React.FC = () => {
       params.append('pn', activeUpiId.name);
       params.append('am', donationAmount.toString());
       params.append('tn', 'Support CodeCashier with your contribution');
-      
       const fullUrl = `${baseUrl}?${params.toString()}`;
-      
+
       // Generate QR code
       QRCode.toDataURL(fullUrl, {
         width: 256,
@@ -57,11 +49,9 @@ const Header: React.FC = () => {
           dark: '#000000',
           light: '#FFFFFF'
         }
-      })
-      .then(url => {
+      }).then(url => {
         setQrDataUrl(url);
-      })
-      .catch(err => {
+      }).catch(err => {
         console.error('Error generating donation QR code:', err);
       });
     }
@@ -79,66 +69,25 @@ const Header: React.FC = () => {
       setShowDonationQR(true);
     }, 500);
   };
-
-  // Function to get role badge color
-  const getRoleBadgeColor = (role: UserRole) => {
-    switch (role) {
-      case 'owner':
-        return 'bg-purple-500 text-white';
-      case 'manager':
-        return 'bg-blue-500 text-white';
-      case 'cashier':
-        return 'bg-green-500 text-white';
-      case 'viewer':
-        return 'bg-gray-500 text-white';
-      default:
-        return 'bg-gray-200 text-gray-800';
-    }
-  };
-
   return <header className="flex items-center justify-between p-2 sm:p-3 md:p-4 border-b shadow-sm">
       <div className="flex items-center gap-1 sm:gap-2">
         <QrCode className="h-5 w-5 md:h-6 md:w-6 text-upi-blue" />
         <h1 className="text-base sm:text-lg md:text-xl font-bold text-upi-blue">CodeCashier</h1>
       </div>
       <div className="flex items-center gap-1 sm:gap-2">
-        {/* User Profile */}
-        {userData && (
-          <div className="flex items-center gap-2">
-            <span className="hidden sm:inline">{userData.name}</span>
-            {userData.role && (
-              <Badge variant="outline" className={getRoleBadgeColor(userData.role)}>
-                {userData.role}
-              </Badge>
-            )}
-          </div>
-        )}
-
         {/* Donation Button */}
-        <Button 
-          variant="outline"
-          size="sm" 
-          onClick={() => setShowDonationQR(true)}
-          className="hidden sm:flex items-center gap-1 border-upi-green text-upi-green hover:bg-upi-green/10"
-        >
+        <Button variant="outline" size="sm" onClick={() => setShowDonationQR(true)} className="hidden sm:flex items-center gap-1 border-upi-green text-upi-green hover:bg-upi-green/10">
           <Gift className="h-3 w-3 sm:h-4 sm:w-4" />
           <span className="hidden sm:inline">Donate</span>
         </Button>
         
         {/* Mobile Donation Button */}
-        <Button 
-          variant="outline"
-          size="icon" 
-          onClick={() => setShowDonationQR(true)}
-          className="sm:hidden h-7 w-7 rounded-full border-upi-green text-upi-green hover:bg-upi-green/10"
-        >
+        <Button variant="outline" size="icon" onClick={() => setShowDonationQR(true)} className="sm:hidden h-7 w-7 rounded-full border-upi-green text-upi-green hover:bg-upi-green/10">
           <Gift className="h-3 w-3" />
         </Button>
 
         {/* Theme Toggle */}
-        <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="rounded-full h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-          {theme === 'dark' ? <Sun className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" /> : <Moon className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />}
-        </Button>
+        
         
         {/* Notifications */}
         <Popover>
@@ -168,17 +117,20 @@ const Header: React.FC = () => {
           </PopoverContent>
         </Popover>
         
-        {/* Admin Mode Toggle */}
-        {userData && (userData.role === 'owner' || userData.role === 'manager') && (
-          <>
-            <Badge variant={isAdmin ? "outline" : "secondary"} className={`${isAdmin ? "bg-upi-blue text-white" : ""} text-xs sm:text-sm`}>
-              {isAdmin ? "Admin Mode" : "User Mode"}
-            </Badge>
-            <Button variant="ghost" size="icon" onClick={toggleAdminMode} className="rounded-full h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-              <Settings className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-            </Button>
-          </>
-        )}
+        {/* User Profile */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            
+          </DropdownMenuTrigger>
+          
+        </DropdownMenu>
+
+        <Badge variant={isAdmin ? "outline" : "secondary"} className={`${isAdmin ? "bg-upi-blue text-white" : ""} text-xs sm:text-sm`}>
+          {isAdmin ? "Admin Mode" : "User Mode"}
+        </Badge>
+        <Button variant="ghost" size="icon" onClick={toggleAdminMode} className="rounded-full h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          <Settings className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+        </Button>
       </div>
 
       {/* Donation QR Code Dialog */}
@@ -195,16 +147,11 @@ const Header: React.FC = () => {
           </DialogHeader>
           
           <div className="flex flex-col items-center justify-center p-4">
-            {activeUpiId ? (
-              <>
+            {activeUpiId ? <>
                 <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
-                  {qrDataUrl ? (
-                    <img src={qrDataUrl} alt="Donation QR Code" className="w-60 h-60" />
-                  ) : (
-                    <div className="w-60 h-60 flex items-center justify-center bg-gray-100 rounded-md">
+                  {qrDataUrl ? <img src={qrDataUrl} alt="Donation QR Code" className="w-60 h-60" /> : <div className="w-60 h-60 flex items-center justify-center bg-gray-100 rounded-md">
                       <p className="text-muted-foreground">Generating QR code...</p>
-                    </div>
-                  )}
+                    </div>}
                 </div>
                 <div className="text-center space-y-1">
                   <p className="font-medium">₹199 one-time donation</p>
@@ -213,19 +160,12 @@ const Header: React.FC = () => {
                     Thank you for supporting CodeCashier!
                   </p>
                 </div>
-              </>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground space-y-4">
+              </> : <div className="text-center py-8 text-muted-foreground space-y-4">
                 <p>No UPI ID is configured to receive donations.</p>
-                <Button 
-                  onClick={addDefaultUpiId}
-                  variant="default"
-                  className="bg-upi-green hover:bg-upi-green/90"
-                >
+                <Button onClick={addDefaultUpiId} variant="default" className="bg-upi-green hover:bg-upi-green/90">
                   Add Donation UPI ID
                 </Button>
-              </div>
-            )}
+              </div>}
           </div>
         </DialogContent>
       </Dialog>
