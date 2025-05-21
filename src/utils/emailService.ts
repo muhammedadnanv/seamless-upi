@@ -28,6 +28,9 @@ export const sendEmail = async ({ to, subject, text, html }: SendEmailParams): P
       };
     }
     
+    // Log the request being sent
+    console.log('Email request:', { to, subject, text: text.substring(0, 100) + '...', hasHtml: !!html });
+    
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {

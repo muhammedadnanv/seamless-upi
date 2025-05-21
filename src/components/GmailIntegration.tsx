@@ -56,7 +56,7 @@ const GmailIntegration = () => {
     try {
       toast({
         title: "Sending Email",
-        description: "Please wait while we send your email...",
+        description: `Sending email to ${data.recipient}...`,
       });
       
       const htmlContent = formatEmailAsHtml(data.message);
