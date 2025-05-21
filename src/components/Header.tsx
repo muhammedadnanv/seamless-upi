@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,7 @@ const Header: React.FC = () => {
     toggleAdminMode,
     transactions,
     activeUpiId,
+    addUpiId
   } = useAppContext();
 
   const {
@@ -62,6 +63,19 @@ const Header: React.FC = () => {
       });
     }
   }, [showDonationQR, activeUpiId]);
+
+  // Function to add the default UPI ID if none exists
+  const addDefaultUpiId = () => {
+    addUpiId({
+      upiId: "adnanmuhammad4393@okicici",
+      name: "Adnan Muhammad",
+      isDefault: true
+    });
+    // Reopen the donation dialog after adding the UPI
+    setTimeout(() => {
+      setShowDonationQR(true);
+    }, 500);
+  };
 
   return <header className="flex items-center justify-between p-2 sm:p-3 md:p-4 border-b shadow-sm">
       <div className="flex items-center gap-1 sm:gap-2">
@@ -173,8 +187,15 @@ const Header: React.FC = () => {
                 </div>
               </>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                Please add a UPI ID in the settings to generate a donation QR code.
+              <div className="text-center py-8 text-muted-foreground space-y-4">
+                <p>No UPI ID is configured to receive donations.</p>
+                <Button 
+                  onClick={addDefaultUpiId}
+                  variant="default"
+                  className="bg-upi-green hover:bg-upi-green/90"
+                >
+                  Add Donation UPI ID
+                </Button>
               </div>
             )}
           </div>
