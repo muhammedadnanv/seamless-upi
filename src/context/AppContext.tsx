@@ -16,6 +16,8 @@ interface AppContextType {
   removeItem: (id: string) => void;
   addTransaction: (transaction: Omit<Transaction, 'id'>) => void;
   updateTransactionStatus: (id: string, status: Transaction['status']) => void;
+  deleteTransaction: (id: string) => void;
+  editTransaction: (id: string, updates: Partial<Omit<Transaction, 'id'>>) => void;
   toggleAdminMode: () => void;
   totalAmount: number;
   setTotalAmount: (amount: number) => void;
@@ -194,6 +196,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  const deleteTransaction = (id: string) => {
+    const transaction = transactions.find(t => t.id === id);
+    if (!transaction) return;
+    
+    setTransactions(prev => prev.filter(t => t.id !== id));
+    
+    toast({
+      title: "Transaction Deleted",
+      description: `Transaction #${id.slice(-4)} has been removed`,
+      variant: "destructive",
+    });
+  };
+
+  const editTransaction = (id: string, updates: Partial<Omit<Transaction, 'id'>>) => {
+    setTransactions(prev => prev.map(tx => 
+      tx.id === id ? { ...tx, ...updates } : tx
+    ));
+    
+    toast({
+      title: "Transaction Updated",
+      description: `Transaction #${id.slice(-4)} has been updated`,
+    });
+  };
+
   const toggleAdminMode = () => {
     setIsAdmin(prev => !prev);
     
@@ -227,6 +253,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       removeItem,
       addTransaction,
       updateTransactionStatus,
+      deleteTransaction,
+      editTransaction,
       toggleAdminMode,
       totalAmount,
       setTotalAmount,
