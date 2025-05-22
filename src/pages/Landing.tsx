@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { QrCode, Gift, HandCoins, Zap, ShieldCheck, Star, Sun, Moon } from 'lucide-react';
+import { QrCode, Gift, HandCoins, Zap, ShieldCheck, Star, Sun, Moon, Code } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '@/context/AppContext';
 import { useTheme } from '@/components/ThemeProvider';
@@ -46,6 +46,10 @@ const Landing: React.FC = () => {
           <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="rounded-full">
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           </Button>
+          <Button onClick={() => navigate('/widget')} variant="outline" size="sm" className="text-xs sm:text-sm mr-2">
+            <Code size={14} className="mr-1" />
+            Widget
+          </Button>
           <Button onClick={() => navigate('/app')} variant="outline" size="sm" className="text-xs sm:text-sm">
             Open App
           </Button>
@@ -70,6 +74,10 @@ const Landing: React.FC = () => {
                 <Button size="lg" onClick={handleGetStarted} className="bg-upi-blue hover:bg-upi-blue/90 shadow-md hover:shadow-lg transition-all">
                   Get Started
                 </Button>
+                <Button size="lg" variant="outline" onClick={() => navigate('/widget')} className="border-upi-blue text-upi-blue hover:bg-upi-blue/10">
+                  <Code size={18} className="mr-2" />
+                  Explore Widget
+                </Button>
               </div>
             </div>
           </div>
@@ -80,7 +88,7 @@ const Landing: React.FC = () => {
       <section className="py-8 sm:py-12 md:py-16 bg-background dark:bg-gray-900">
         <div className="container max-w-6xl mx-auto px-3 sm:px-4">
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8 md:mb-12 dark:text-white">Why Use CodeCashier?</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             <Card className="border-2 border-upi-light/10 transition-all hover:shadow-md hover:border-upi-light/20">
               <CardHeader className="p-4 sm:p-6">
                 <CardTitle className="text-base sm:text-lg md:text-xl flex items-center gap-1 sm:gap-2">
@@ -111,8 +119,24 @@ const Landing: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4 sm:p-6 pt-0 text-sm">
-                Access advanced reporting, voice commands, and customizable transaction history in our premium package.
+                Access advanced reporting, voice commands, and customizable transaction history.
               </CardContent>
+            </Card>
+            <Card className="border-2 border-upi-light/10 transition-all hover:shadow-md hover:border-upi-light/20 bg-gradient-to-br from-upi-light to-white dark:from-gray-800 dark:to-gray-900">
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-base sm:text-lg md:text-xl flex items-center gap-1 sm:gap-2">
+                  <Code className="h-4 w-4 sm:h-5 sm:w-5 text-upi-blue" />
+                  Embeddable Widget
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 sm:p-6 pt-0 text-sm">
+                Use our customizable donation widget on your own website with simple HTML embedding.
+              </CardContent>
+              <CardFooter className="p-4 sm:p-6 pt-0">
+                <Button variant="link" size="sm" onClick={() => navigate('/widget')} className="p-0 text-upi-blue">
+                  Try it now
+                </Button>
+              </CardFooter>
             </Card>
           </div>
         </div>

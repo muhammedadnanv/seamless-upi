@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import DonatingWidgetDemo from "./pages/DonatingWidgetDemo";
 import { AppProvider } from "@/context/AppContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/context/AuthContext";
@@ -25,6 +26,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/app" element={<Index />} />
+                <Route path="/widget" element={<DonatingWidgetDemo />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
