@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import Header from '@/components/Header';
 import UpiIdManager from '@/components/UpiIdManager';
@@ -10,6 +9,7 @@ import GmailIntegration from '@/components/GmailIntegration';
 import UserManagement from '@/components/UserManagement';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
+import { Linkedin } from 'lucide-react';
 
 const MainContent = () => {
   const { isAdmin } = useAppContext();
@@ -90,7 +90,18 @@ const Index = () => {
       <footer className="border-t py-2 sm:py-3 md:py-4 dark:border-gray-800">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 text-center text-xs sm:text-sm text-muted-foreground">
           <div className="flex flex-col items-center gap-1 md:gap-2">
-            <p className="text-xs">CodeCashier by Muhammed Adnan</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs">CodeCashier by Muhammed Adnan</p>
+              <a 
+                href="https://www.linkedin.com/in/muhammedadnanvv/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-blue-500 hover:text-blue-600 transition-colors"
+                aria-label="LinkedIn Profile"
+              >
+                <Linkedin size={14} />
+              </a>
+            </div>
           </div>
         </div>
       </footer>
