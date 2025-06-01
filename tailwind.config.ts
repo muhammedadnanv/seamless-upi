@@ -119,6 +119,46 @@ export default {
 						transform: 'scale(1)',
 						opacity: '1'
 					}
+				},
+				'blob': {
+					'0%': {
+						transform: 'translate(0px, 0px) scale(1)'
+					},
+					'33%': {
+						transform: 'translate(30px, -50px) scale(1.1)'
+					},
+					'66%': {
+						transform: 'translate(-20px, 20px) scale(0.9)'
+					},
+					'100%': {
+						transform: 'translate(0px, 0px) scale(1)'
+					}
+				},
+				'gradient-x': {
+					'0%, 100%': {
+						'background-size': '200% 200%',
+						'background-position': 'left center'
+					},
+					'50%': {
+						'background-size': '200% 200%',
+						'background-position': 'right center'
+					}
+				},
+				'float': {
+					'0%, 100%': {
+						transform: 'translateY(0px)'
+					},
+					'50%': {
+						transform: 'translateY(-10px)'
+					}
+				},
+				'glow': {
+					'0%, 100%': {
+						opacity: '1'
+					},
+					'50%': {
+						opacity: '0.5'
+					}
 				}
 			},
 			animation: {
@@ -126,9 +166,62 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'pulse-soft': 'pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
 				'fade-in': 'fade-in 0.3s ease-out',
-				'scale-in': 'scale-in 0.2s ease-out'
+				'scale-in': 'scale-in 0.2s ease-out',
+				'blob': 'blob 7s infinite',
+				'gradient-x': 'gradient-x 15s ease infinite',
+				'float': 'float 3s ease-in-out infinite',
+				'glow': 'glow 2s ease-in-out infinite alternate'
+			},
+			animationDelay: {
+				'75': '75ms',
+				'100': '100ms',
+				'150': '150ms',
+				'200': '200ms',
+				'300': '300ms',
+				'500': '500ms',
+				'700': '700ms',
+				'1000': '1000ms',
+				'2000': '2000ms',
+				'4000': '4000ms'
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		function({ addUtilities }) {
+			const newUtilities = {
+				'.animation-delay-75': {
+					'animation-delay': '75ms',
+				},
+				'.animation-delay-100': {
+					'animation-delay': '100ms',
+				},
+				'.animation-delay-150': {
+					'animation-delay': '150ms',
+				},
+				'.animation-delay-200': {
+					'animation-delay': '200ms',
+				},
+				'.animation-delay-300': {
+					'animation-delay': '300ms',
+				},
+				'.animation-delay-500': {
+					'animation-delay': '500ms',
+				},
+				'.animation-delay-700': {
+					'animation-delay': '700ms',
+				},
+				'.animation-delay-1000': {
+					'animation-delay': '1000ms',
+				},
+				'.animation-delay-2000': {
+					'animation-delay': '2000ms',
+				},
+				'.animation-delay-4000': {
+					'animation-delay': '4000ms',
+				},
+			}
+			addUtilities(newUtilities)
+		}
+	],
 } satisfies Config;

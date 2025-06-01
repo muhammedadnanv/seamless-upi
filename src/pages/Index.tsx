@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import React from 'react';
 import Header from '@/components/Header';
 import UpiIdManager from '@/components/UpiIdManager';
 import ItemManager from '@/components/ItemManager';
@@ -9,7 +10,9 @@ import GmailIntegration from '@/components/GmailIntegration';
 import UserManagement from '@/components/UserManagement';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
-import { Linkedin } from 'lucide-react';
+import { Linkedin, Shield, Zap, Star } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 const MainContent = () => {
   const { isAdmin } = useAppContext();
@@ -21,60 +24,134 @@ const MainContent = () => {
   const isViewer = userData?.role === 'viewer';
   
   return (
-    <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 sm:py-4 md:py-6">
-      <div className="space-y-3 sm:space-y-4 md:space-y-6">
-        {isAdmin ? (
-          <>
-            {/* Only owners and managers can manage UPI IDs */}
-            {(isOwner || isManager) && <UpiIdManager />}
-            
-            {/* Only owners and managers can manage items */}
-            {(isOwner || isManager) && <ItemManager />}
-            
-            {/* Only owners can manage users */}
-            {isOwner && <UserManagement />}
-            
-            {/* Everyone can generate QR codes */}
-            <QrCodeGenerator />
-            
-            {/* Only owners and managers can access Gmail integration */}
-            {(isOwner || isManager) && <GmailIntegration />}
-            
-            {/* Everyone can view transaction history */}
-            <TransactionHistory />
-          </>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
-            <div className="md:order-2">
-              {/* All roles except view-only can generate QR codes */}
-              {!isViewer ? (
-                <QrCodeGenerator />
-              ) : (
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center">
-                  <p className="text-muted-foreground">
-                    View-only access. QR code generation is not available.
-                  </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
+      {/* Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-300/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-purple-300/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-pink-300/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+      </div>
+
+      <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-6 sm:py-8 relative z-10">
+        <div className="space-y-6 sm:space-y-8">
+          {isAdmin ? (
+            <>
+              {/* Admin Dashboard Header */}
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-full border border-purple-200 dark:border-purple-700 mb-4">
+                  <Shield className="h-4 w-4 text-purple-600" />
+                  <span className="text-sm font-medium text-purple-700 dark:text-purple-300">Admin Dashboard</span>
                 </div>
-              )}
-            </div>
-            <div className="md:order-1">
-              {/* Everyone can see payment summary */}
-              <PaymentSummary />
-              <div className="mt-3 sm:mt-4 md:mt-6">
-                {/* Only non-viewers can access Gmail integration */}
-                {!isViewer ? (
-                  <GmailIntegration />
-                ) : (
-                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center">
-                    <p className="text-muted-foreground">
-                      View-only access. Email integration is not available.
-                    </p>
-                  </div>
-                )}
+                <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                  Welcome to CodeCashier Pro
+                </h1>
+                <p className="text-gray-600 dark:text-gray-300 mt-2">Manage your payment system with advanced controls</p>
               </div>
-            </div>
-          </div>
-        )}
+
+              {/* Admin Grid Layout */}
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+                {/* Main Management Column */}
+                <div className="xl:col-span-2 space-y-6">
+                  {(isOwner || isManager) && (
+                    <Card className="border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-xl">
+                      <UpiIdManager />
+                    </Card>
+                  )}
+                  
+                  {(isOwner || isManager) && (
+                    <Card className="border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-xl">
+                      <ItemManager />
+                    </Card>
+                  )}
+                  
+                  {isOwner && (
+                    <Card className="border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-xl">
+                      <UserManagement />
+                    </Card>
+                  )}
+                </div>
+
+                {/* Side Panel */}
+                <div className="space-y-6">
+                  <Card className="border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-xl">
+                    <QrCodeGenerator />
+                  </Card>
+                  
+                  {(isOwner || isManager) && (
+                    <Card className="border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-xl">
+                      <GmailIntegration />
+                    </Card>
+                  )}
+                </div>
+              </div>
+
+              {/* Full Width Transaction History */}
+              <Card className="border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-xl">
+                <TransactionHistory />
+              </Card>
+            </>
+          ) : (
+            <>
+              {/* User Dashboard Header */}
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-full border border-blue-200 dark:border-blue-700 mb-4">
+                  <Zap className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Quick Access</span>
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                  Payment Dashboard
+                </h1>
+                <p className="text-gray-600 dark:text-gray-300 mt-2">Generate QR codes and manage payments efficiently</p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                <div className="lg:order-2 space-y-6">
+                  {!isViewer ? (
+                    <Card className="border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300">
+                      <QrCodeGenerator />
+                    </Card>
+                  ) : (
+                    <Card className="border-0 bg-gray-50/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-xl">
+                      <CardContent className="p-8 text-center">
+                        <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Shield className="h-8 w-8 text-gray-400" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">View-Only Access</h3>
+                        <p className="text-gray-500 dark:text-gray-400">
+                          QR code generation is not available for your current role.
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+                
+                <div className="lg:order-1 space-y-6">
+                  <Card className="border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300">
+                    <PaymentSummary />
+                  </Card>
+                  
+                  {!isViewer ? (
+                    <Card className="border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300">
+                      <GmailIntegration />
+                    </Card>
+                  ) : (
+                    <Card className="border-0 bg-gray-50/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-xl">
+                      <CardContent className="p-8 text-center">
+                        <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Shield className="h-8 w-8 text-gray-400" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">View-Only Access</h3>
+                        <p className="text-gray-500 dark:text-gray-400">
+                          Email integration is not available for your current role.
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -82,25 +159,36 @@ const MainContent = () => {
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background dark:bg-gray-900 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 overflow-x-hidden">
         <MainContent />
       </main>
-      <footer className="border-t py-2 sm:py-3 md:py-4 dark:border-gray-800">
-        <div className="container max-w-4xl mx-auto px-3 sm:px-4 text-center text-xs sm:text-sm text-muted-foreground">
-          <div className="flex flex-col items-center gap-1 md:gap-2">
-            <div className="flex items-center gap-2">
-              <p className="text-xs">CodeCashier by Muhammed Adnan</p>
-              <a 
-                href="https://www.linkedin.com/in/muhammedadnanvv/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-blue-500 hover:text-blue-600 transition-colors"
-                aria-label="LinkedIn Profile"
-              >
-                <Linkedin size={14} />
-              </a>
+      <footer className="border-t border-white/20 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 py-4 sm:py-6">
+        <div className="container max-w-7xl mx-auto px-3 sm:px-4 text-center">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Badge variant="secondary" className="bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 border-purple-200">
+                <Star size={12} className="mr-1" />
+                Premium Platform
+              </Badge>
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <span>CodeCashier by Muhammed Adnan</span>
+                <a 
+                  href="https://www.linkedin.com/in/muhammedadnanvv/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-blue-500 hover:text-blue-600 transition-colors p-1 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  aria-label="LinkedIn Profile"
+                >
+                  <Linkedin size={16} />
+                </a>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 text-xs text-gray-400">
+              <span>© 2024 CodeCashier</span>
+              <span>•</span>
+              <span>All rights reserved</span>
             </div>
           </div>
         </div>
