@@ -1,23 +1,46 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { useNotifications } from '@/context/NotificationContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { QrCode, Settings, BellRing, Sun, Moon, User, Gift, Sparkles } from 'lucide-react';
+import { QrCode, Settings, Sun, Moon, User, Gift, Sparkles } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import NotificationBell from '@/components/NotificationBell';
 import QRCode from 'qrcode';
 
 const Header: React.FC = () => {
   const { isAdmin, toggleAdminMode, transactions, activeUpiId, addUpiId } = useAppContext();
+  const { addNotification } = useNotifications();
   const { theme, setTheme } = useTheme();
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showDonationQR, setShowDonationQR] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
 
-  const recentNotifications = transactions.slice(0, 3).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  // Monitor transactions for notifications
+  React.useEffect(() => {
+    const latestTransaction = transactions[0];
+    if (latestTransaction) {
+      const timeDiff = new Date().getTime() - new Date(latestTransaction.timestamp).getTime();
+      // Only notify for transactions from the last 10 seconds (recent ones)
+      if (timeDiff < 10000) {
+        addNotification({
+          type: latestTransaction.status === 'completed' ? 'success' : 
+                latestTransaction.status === 'pending' ? 'info' : 'error',
+          title: `Transaction ${latestTransaction.status}`,
+          message: `₹${latestTransaction.amount.toFixed(2)} transaction ${latestTransaction.status}`,
+          action: latestTransaction.status === 'completed' ? {
+            label: 'View Details',
+            onClick: () => {
+              console.log('View transaction details:', latestTransaction);
+              // You can add navigation to transaction details here
+            }
+          } : undefined
+        });
+      }
+    }
+  }, [transactions, addNotification]);
 
   React.useEffect(() => {
     if (showDonationQR && activeUpiId) {
@@ -41,9 +64,14 @@ const Header: React.FC = () => {
         setQrDataUrl(url);
       }).catch(err => {
         console.error('Error generating donation QR code:', err);
+        addNotification({
+          type: 'error',
+          title: 'QR Code Error',
+          message: 'Failed to generate donation QR code'
+        });
       });
     }
-  }, [showDonationQR, activeUpiId]);
+  }, [showDonationQR, activeUpiId, addNotification]);
 
   const addDefaultUpiId = () => {
     addUpiId({
@@ -51,9 +79,36 @@ const Header: React.FC = () => {
       name: "Adnan Muhammad",
       isDefault: true
     });
+    
+    addNotification({
+      type: 'success',
+      title: 'UPI ID Added',
+      message: 'Default donation UPI ID has been configured successfully'
+    });
+    
     setTimeout(() => {
       setShowDonationQR(true);
     }, 500);
+  };
+
+  const handleThemeToggle = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    addNotification({
+      type: 'info',
+      title: 'Theme Changed',
+      message: `Switched to ${newTheme} mode`
+    });
+  };
+
+  const handleAdminToggle = () => {
+    toggleAdminMode();
+    const newMode = !isAdmin ? 'Admin' : 'User';
+    addNotification({
+      type: 'info',
+      title: 'Mode Changed',
+      message: `Switched to ${newMode} mode`
+    });
   };
 
   return (
@@ -99,67 +154,14 @@ const Header: React.FC = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
+            onClick={handleThemeToggle} 
             className="rounded-full h-9 w-9 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 dark:hover:from-gray-800 dark:hover:to-gray-700 transition-all duration-300 shadow-sm hover:shadow-md"
           >
             {theme === 'dark' ? <Sun className="h-5 w-5 text-yellow-500" /> : <Moon className="h-5 w-5 text-indigo-600" />}
           </Button>
           
-          {/* Enhanced Notifications */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="rounded-full h-9 w-9 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 transition-all duration-300 relative shadow-sm hover:shadow-md"
-              >
-                <BellRing className="h-5 w-5 text-blue-600" />
-                {recentNotifications.length > 0 && (
-                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full animate-pulse"></span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 p-0 border-0 shadow-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-md" align="end">
-              <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
-                <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                  <BellRing size={16} />
-                  Recent Activity
-                </h3>
-              </div>
-              <div className="max-h-96 overflow-auto">
-                {recentNotifications.length === 0 ? (
-                  <div className="p-6 text-center">
-                    <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <BellRing className="h-6 w-6 text-gray-400" />
-                    </div>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">No new notifications</p>
-                  </div>
-                ) : (
-                  recentNotifications.map((transaction, index) => (
-                    <div key={transaction.id} className="p-4 border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors duration-200">
-                      <div className="flex items-start gap-3">
-                        <div className={`w-2 h-2 rounded-full mt-2 ${
-                          transaction.status === 'completed' ? 'bg-green-500' :
-                          transaction.status === 'pending' ? 'bg-yellow-500' : 'bg-red-500'
-                        }`}></div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            Transaction {transaction.status}
-                          </div>
-                          <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                            ₹{transaction.amount.toFixed(2)}
-                          </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            {new Date(transaction.timestamp).toLocaleString()}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
+          {/* Enhanced Notifications using new component */}
+          <NotificationBell />
 
           {/* Enhanced Admin Toggle */}
           <Badge 
@@ -169,7 +171,7 @@ const Header: React.FC = () => {
                 ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg" 
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             } text-xs sm:text-sm transition-all duration-300 cursor-pointer`}
-            onClick={toggleAdminMode}
+            onClick={handleAdminToggle}
           >
             {isAdmin ? "Admin Mode" : "User Mode"}
           </Badge>
@@ -177,7 +179,7 @@ const Header: React.FC = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={toggleAdminMode} 
+            onClick={handleAdminToggle} 
             className="rounded-full h-9 w-9 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 transition-all duration-300 shadow-sm hover:shadow-md"
           >
             <Settings className="h-5 w-5 text-purple-600" />
