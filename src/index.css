@@ -101,8 +101,8 @@
 
   /* Enhanced scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
@@ -123,6 +123,17 @@
   *:focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
+
+  /* Mobile-first responsive typography */
+  html {
+    font-size: 14px;
+  }
+
+  @media (min-width: 640px) {
+    html {
+      font-size: 16px;
+    }
+  }
 }
 
 @layer components {
@@ -139,19 +150,34 @@
   }
 
   .payment-card {
-    @apply glass-card p-4 sm:p-6 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    @apply glass-card p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
   }
 
   .item-card {
-    @apply glass-card rounded-xl p-4 mb-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1;
+    @apply glass-card rounded-lg sm:rounded-xl p-3 sm:p-4 mb-3 sm:mb-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1;
   }
 
   .modern-input {
-    @apply bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50 rounded-xl transition-all duration-300 focus:bg-white dark:focus:bg-gray-800 focus:shadow-lg;
+    @apply bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50 rounded-lg sm:rounded-xl transition-all duration-300 focus:bg-white dark:focus:bg-gray-800 focus:shadow-lg text-sm sm:text-base;
   }
 
   .floating-element {
     @apply transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl;
+  }
+
+  /* Mobile-friendly button styles */
+  .mobile-button {
+    @apply min-h-[44px] px-4 py-2 text-sm sm:text-base;
+  }
+
+  /* Responsive container */
+  .responsive-container {
+    @apply w-full max-w-none sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl mx-auto;
+  }
+
+  /* Mobile-friendly card spacing */
+  .mobile-card {
+    @apply p-3 sm:p-4 lg:p-6 m-2 sm:m-3 lg:m-4;
   }
 }
 
@@ -168,6 +194,11 @@
 
 @keyframes slide-up {
   0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in-mobile {
+  0% { transform: translateY(15px); opacity: 0; }
   100% { transform: translateY(0); opacity: 1; }
 }
 
@@ -193,4 +224,33 @@
 
 .slide-up {
   animation: slide-up 0.6s ease-out;
+}
+
+/* Mobile-specific animations */
+@media (max-width: 640px) {
+  .fade-in {
+    animation: fade-in-mobile 0.4s ease-out;
+  }
+}
+
+/* Ensure proper touch targets on mobile */
+@media (max-width: 768px) {
+  button, a, input, select, textarea {
+    min-height: 44px;
+  }
+
+  /* Reduce animation intensity on mobile for better performance */
+  .animate-blob {
+    animation-duration: 10s;
+  }
+}
+
+/* Improved responsive grid */
+.responsive-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6;
+}
+
+/* Better mobile navigation */
+.mobile-nav {
+  @apply flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4;
 }
