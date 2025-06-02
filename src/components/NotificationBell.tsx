@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BellRing, Check, Trash2, MarkAsRead } from 'lucide-react';
+import { BellRing, Check, Trash2, CheckCheck } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -88,7 +88,7 @@ const NotificationBell: React.FC = () => {
                     onClick={markAllAsRead}
                     className="h-7 px-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-900/20"
                   >
-                    <Check size={12} className="mr-1" />
+                    <CheckCheck size={12} className="mr-1" />
                     Mark all read
                   </Button>
                 )}
