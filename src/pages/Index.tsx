@@ -22,6 +22,23 @@ const MainContent = () => {
   const isManager = userData?.role === 'manager';
   const isCashier = userData?.role === 'cashier';
   const isViewer = userData?.role === 'viewer';
+
+  // Add SEO-focused meta tags dynamically
+  React.useEffect(() => {
+    document.title = isAdmin 
+      ? "CodeCashier Admin Dashboard - Manage UPI QR Codes & Payments"
+      : "CodeCashier - Free UPI QR Code Generator Dashboard";
+    
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 
+        isAdmin 
+          ? "Admin dashboard for CodeCashier UPI payment system. Manage QR codes, track transactions, configure settings for your business payment solution."
+          : "Generate UPI QR codes instantly with CodeCashier dashboard. Track payments, manage multiple UPI IDs, export transaction history for your business."
+      );
+    }
+  }, [isAdmin]);
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
@@ -96,12 +113,12 @@ const MainContent = () => {
               <div className="text-center mb-6 sm:mb-8">
                 <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-full border border-blue-200 dark:border-blue-700 mb-3 sm:mb-4">
                   <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
-                  <span className="text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-300">Quick Access</span>
+                  <span className="text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-300">Free UPI QR Generator</span>
                 </div>
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent px-4">
-                  Payment Dashboard
+                  UPI Payment Dashboard
                 </h1>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-2 px-4">Generate QR codes and manage payments efficiently</p>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-2 px-4">Generate QR codes instantly for your business, events, or donations</p>
               </div>
 
               {/* User Dashboard Grid - Mobile-First Layout */}
@@ -173,7 +190,7 @@ const Index = () => {
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
               <Badge variant="secondary" className="bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 border-purple-200 text-xs">
                 <Star size={10} className="mr-1" />
-                Premium Platform
+                Premium UPI QR Platform
               </Badge>
               <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                 <span>CodeCashier by Muhammed Adnan</span>
@@ -205,7 +222,7 @@ const Index = () => {
             <div className="flex items-center gap-2 sm:gap-4 text-xs text-gray-400">
               <span>© 2024 CodeCashier</span>
               <span className="hidden sm:inline">•</span>
-              <span>All rights reserved</span>
+              <span>Free UPI QR Generator India</span>
             </div>
           </div>
         </div>
