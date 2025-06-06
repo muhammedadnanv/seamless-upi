@@ -246,9 +246,25 @@ const Landing: React.FC = () => {
                 CodeCashier - Premium UPI Payment Platform
               </p>
             </div>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-              Created with ❤️ by Muhammed Adnan
-            </p>
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                Created with ❤️ by Muhammed Adnan
+              </p>
+              <a 
+                href="https://www.producthunt.com/products/codecashier?utm_source=badge-follow&utm_medium=badge&utm_source=badge-codecashier" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src="https://api.producthunt.com/widgets/embed-image/v1/follow.svg?product_id=1067890&theme=light&size=small" 
+                  alt="CodeCashier - Generate UPI QR codes instantly | Product Hunt" 
+                  style={{width: '86px', height: '32px'}} 
+                  width="86" 
+                  height="32" 
+                />
+              </a>
+            </div>
             <div className="flex items-center gap-2 sm:gap-4 text-xs text-gray-400">
               <span>© 2024 CodeCashier</span>
               <span>•</span>

@@ -187,6 +187,20 @@ const Index = () => {
                   <Linkedin size={14} />
                 </a>
               </div>
+              <a 
+                href="https://www.producthunt.com/products/codecashier?utm_source=badge-follow&utm_medium=badge&utm_source=badge-codecashier" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src="https://api.producthunt.com/widgets/embed-image/v1/follow.svg?product_id=1067890&theme=light&size=small" 
+                  alt="CodeCashier - Generate UPI QR codes instantly | Product Hunt" 
+                  style={{width: '86px', height: '32px'}} 
+                  width="86" 
+                  height="32" 
+                />
+              </a>
             </div>
             <div className="flex items-center gap-2 sm:gap-4 text-xs text-gray-400">
               <span>© 2024 CodeCashier</span>
