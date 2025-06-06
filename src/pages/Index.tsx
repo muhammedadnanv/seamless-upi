@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import UpiIdManager from '@/components/UpiIdManager';
@@ -8,6 +7,7 @@ import PaymentSummary from '@/components/PaymentSummary';
 import TransactionHistory from '@/components/TransactionHistory';
 import GmailIntegration from '@/components/GmailIntegration';
 import UserManagement from '@/components/UserManagement';
+import ReferralSection from '@/components/ReferralSection';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { Linkedin, Shield, Zap, Star } from 'lucide-react';
@@ -99,6 +99,9 @@ const MainContent = () => {
                       <GmailIntegration />
                     </Card>
                   )}
+
+                  {/* Add Referral Section for admins */}
+                  <ReferralSection />
                 </div>
               </div>
 
@@ -169,6 +172,9 @@ const MainContent = () => {
                   )}
                 </div>
               </div>
+
+              {/* Add Referral Section for regular users */}
+              <ReferralSection />
             </>
           )}
         </div>
