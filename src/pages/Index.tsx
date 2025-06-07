@@ -1,23 +1,23 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Package, QrCode, Share2, CreditCard } from 'lucide-react';
+import { User, Package, QrCode, History, Share2, CreditCard } from 'lucide-react';
 import Header from '@/components/Header';
 import UpiIdManager from '@/components/UpiIdManager';
 import ItemManager from '@/components/ItemManager';
 import PaymentSummary from '@/components/PaymentSummary';
 import QrCodeGenerator from '@/components/QrCodeGenerator';
 import UpiGatewayGenerator from '@/components/UpiGatewayGenerator';
+import TransactionHistory from '@/components/TransactionHistory';
 import ReferralSection from '@/components/ReferralSection';
 
 import { useAppContext } from '@/context/AppContext';
 
 const Index: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"upi" | "items" | "qr" | "referral" | "gateway">("qr");
+  const [activeTab, setActiveTab] = useState<"upi" | "items" | "qr" | "transactions" | "referral" | "gateway">("qr");
   const { activeUpiId } = useAppContext();
 
   const handleTabChange = (value: string) => {
-    setActiveTab(value as "upi" | "items" | "qr" | "referral" | "gateway");
+    setActiveTab(value as "upi" | "items" | "qr" | "transactions" | "referral" | "gateway");
   };
 
   return (
@@ -35,7 +35,7 @@ const Index: React.FC = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 mb-8">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 mb-8">
             <TabsTrigger value="upi" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               <span className="hidden sm:inline">UPI IDs</span>
@@ -55,6 +55,11 @@ const Index: React.FC = () => {
               <CreditCard className="h-4 w-4" />
               <span className="hidden sm:inline">Gateway</span>
               <span className="sm:hidden">Gateway</span>
+            </TabsTrigger>
+            <TabsTrigger value="transactions" className="flex items-center gap-2">
+              <History className="h-4 w-4" />
+              <span className="hidden sm:inline">History</span>
+              <span className="sm:hidden">History</span>
             </TabsTrigger>
             <TabsTrigger value="referral" className="flex items-center gap-2">
               <Share2 className="h-4 w-4" />
@@ -80,6 +85,10 @@ const Index: React.FC = () => {
 
           <TabsContent value="gateway">
             <UpiGatewayGenerator />
+          </TabsContent>
+
+          <TabsContent value="transactions">
+            <TransactionHistory />
           </TabsContent>
 
           <TabsContent value="referral">

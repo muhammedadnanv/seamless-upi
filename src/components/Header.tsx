@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useNotifications } from '@/context/NotificationContext';
@@ -11,7 +12,7 @@ import NotificationBell from '@/components/NotificationBell';
 import QRCode from 'qrcode';
 
 const Header: React.FC = () => {
-  const { isAdmin, toggleAdminMode, activeUpiId, addUpiId } = useAppContext();
+  const { isAdmin, toggleAdminMode, transactions, activeUpiId, addUpiId } = useAppContext();
   const { addNotification } = useNotifications();
   const { theme, setTheme, actualTheme } = useTheme();
   const [showDonationQR, setShowDonationQR] = useState(false);
