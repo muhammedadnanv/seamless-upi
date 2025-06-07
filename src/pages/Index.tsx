@@ -16,6 +16,10 @@ const Index: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"upi" | "items" | "qr" | "transactions" | "referral" | "gateway">("qr");
   const { activeUpiId } = useAppContext();
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as "upi" | "items" | "qr" | "transactions" | "referral" | "gateway");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
       <Header />
@@ -30,7 +34,7 @@ const Index: React.FC = () => {
           </p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 mb-8">
             <TabsTrigger value="upi" className="flex items-center gap-2">
               <User className="h-4 w-4" />
