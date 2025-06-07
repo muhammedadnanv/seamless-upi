@@ -1,11 +1,11 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { UpiId, Item, Transaction } from '@/types';
+import { UpiId, Item } from '@/types';
 import { toast } from "@/components/ui/use-toast";
 
 interface AppContextType {
   upiIds: UpiId[];
   items: Item[];
-  transactions: Transaction[];
   activeUpiId: UpiId | null;
   isAdmin: boolean;
   addUpiId: (upiId: Omit<UpiId, 'id'>) => void;
@@ -14,10 +14,6 @@ interface AppContextType {
   addItem: (item: Omit<Item, 'id'>) => void;
   updateItem: (id: string, updates: Partial<Item>) => void;
   removeItem: (id: string) => void;
-  addTransaction: (transaction: Omit<Transaction, 'id'>) => void;
-  updateTransactionStatus: (id: string, status: Transaction['status']) => void;
-  deleteTransaction: (id: string) => void;
-  editTransaction: (id: string, updates: Partial<Omit<Transaction, 'id'>>) => void;
   toggleAdminMode: () => void;
   totalAmount: number;
   setTotalAmount: (amount: number) => void;
@@ -45,11 +41,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const saved = localStorage.getItem('items');
     return saved ? JSON.parse(saved) : defaultItems;
   });
-  
-  const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const saved = localStorage.getItem('transactions');
-    return saved ? JSON.parse(saved) : [];
-  });
 
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [customTotalAmount, setCustomTotalAmount] = useState<number | null>(null);
@@ -74,10 +65,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem('items', JSON.stringify(items));
   }, [items]);
-
-  useEffect(() => {
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-  }, [transactions]);
 
   // UPI ID management functions
   const addUpiId = (upiId: Omit<UpiId, 'id'>) => {
@@ -170,56 +157,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  // Transaction management functions
-  const addTransaction = (transaction: Omit<Transaction, 'id'>) => {
-    const newTransaction = {
-      ...transaction,
-      id: Date.now().toString(),
-    };
-    setTransactions(prev => [newTransaction, ...prev]);
-    
-    toast({
-      title: "Transaction Initiated",
-      description: `Transaction of ₹${transaction.amount.toFixed(2)} has been created`,
-    });
-  };
-
-  const updateTransactionStatus = (id: string, status: Transaction['status']) => {
-    setTransactions(prev => prev.map(tx => 
-      tx.id === id ? { ...tx, status } : tx
-    ));
-    
-    toast({
-      title: `Transaction ${status.charAt(0).toUpperCase() + status.slice(1)}`,
-      description: `Transaction #${id.slice(-4)} status updated to ${status}`,
-      variant: status === 'completed' ? 'default' : status === 'failed' ? 'destructive' : undefined,
-    });
-  };
-
-  const deleteTransaction = (id: string) => {
-    const transaction = transactions.find(t => t.id === id);
-    if (!transaction) return;
-    
-    setTransactions(prev => prev.filter(t => t.id !== id));
-    
-    toast({
-      title: "Transaction Deleted",
-      description: `Transaction #${id.slice(-4)} has been removed`,
-      variant: "destructive",
-    });
-  };
-
-  const editTransaction = (id: string, updates: Partial<Omit<Transaction, 'id'>>) => {
-    setTransactions(prev => prev.map(tx => 
-      tx.id === id ? { ...tx, ...updates } : tx
-    ));
-    
-    toast({
-      title: "Transaction Updated",
-      description: `Transaction #${id.slice(-4)} has been updated`,
-    });
-  };
-
   const toggleAdminMode = () => {
     setIsAdmin(prev => !prev);
     
@@ -242,7 +179,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     <AppContext.Provider value={{
       upiIds,
       items,
-      transactions,
       activeUpiId,
       isAdmin,
       addUpiId,
@@ -251,10 +187,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       addItem,
       updateItem,
       removeItem,
-      addTransaction,
-      updateTransactionStatus,
-      deleteTransaction,
-      editTransaction,
       toggleAdminMode,
       totalAmount,
       setTotalAmount,
