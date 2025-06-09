@@ -13,16 +13,6 @@ export interface Item {
   quantity: number;
 }
 
-export interface Transaction {
-  id: string;
-  amount: number;
-  status: 'pending' | 'completed' | 'failed';
-  items: Item[];
-  upiId: string;
-  timestamp: Date;
-  reference: string;
-}
-
 export type UserRole = 'owner' | 'manager' | 'cashier' | 'viewer';
 
 export interface AppUser {

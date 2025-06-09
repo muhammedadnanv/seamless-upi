@@ -12,35 +12,11 @@ import NotificationBell from '@/components/NotificationBell';
 import QRCode from 'qrcode';
 
 const Header: React.FC = () => {
-  const { isAdmin, toggleAdminMode, transactions, activeUpiId, addUpiId } = useAppContext();
+  const { isAdmin, toggleAdminMode, activeUpiId, addUpiId } = useAppContext();
   const { addNotification } = useNotifications();
   const { theme, setTheme, actualTheme } = useTheme();
   const [showDonationQR, setShowDonationQR] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
-
-  // Monitor transactions for notifications
-  React.useEffect(() => {
-    const latestTransaction = transactions[0];
-    if (latestTransaction) {
-      const timeDiff = new Date().getTime() - new Date(latestTransaction.timestamp).getTime();
-      // Only notify for transactions from the last 10 seconds (recent ones)
-      if (timeDiff < 10000) {
-        addNotification({
-          type: latestTransaction.status === 'completed' ? 'success' : 
-                latestTransaction.status === 'pending' ? 'info' : 'error',
-          title: `Transaction ${latestTransaction.status}`,
-          message: `₹${latestTransaction.amount.toFixed(2)} transaction ${latestTransaction.status}`,
-          action: latestTransaction.status === 'completed' ? {
-            label: 'View Details',
-            onClick: () => {
-              console.log('View transaction details:', latestTransaction);
-              // You can add navigation to transaction details here
-            }
-          } : undefined
-        });
-      }
-    }
-  }, [transactions, addNotification]);
 
   React.useEffect(() => {
     if (showDonationQR && activeUpiId) {
