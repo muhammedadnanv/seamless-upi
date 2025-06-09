@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Copy, Eye, Code, CreditCard, Check } from 'lucide-react';
+import { Copy, Eye, Code, CreditCard, Check, QrCode, Download } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import QRCode from 'qrcode';
 
 const UpiGatewayGenerator: React.FC = () => {
   const [upiId, setUpiId] = useState('');
@@ -15,8 +16,10 @@ const UpiGatewayGenerator: React.FC = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [embedCode, setEmbedCode] = useState('');
   const [copied, setCopied] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string>('');
+  const [showQrCode, setShowQrCode] = useState(false);
 
-  const generateEmbedCode = () => {
+  const generatePaymentGateway = () => {
     if (!upiId || !payeeName || !amount) {
       toast({
         title: "Missing Information",
@@ -51,6 +54,62 @@ const UpiGatewayGenerator: React.FC = () => {
     });
   };
 
+  const generateQrCode = async () => {
+    if (!upiId || !payeeName || !amount) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all fields to generate the QR code",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const encodedPayeeName = encodeURIComponent(payeeName);
+    const upiDeepLink = `upi://pay?pa=${upiId}&pn=${encodedPayeeName}&am=${amount}&cu=INR`;
+
+    try {
+      const qrUrl = await QRCode.toDataURL(upiDeepLink, {
+        width: 256,
+        margin: 1,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      
+      setQrDataUrl(qrUrl);
+      setShowQrCode(true);
+      
+      toast({
+        title: "QR Code Generated",
+        description: "Your payment QR code is ready!"
+      });
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      toast({
+        title: "QR Generation Failed",
+        description: "Failed to generate QR code. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const downloadQrCode = () => {
+    if (!qrDataUrl) return;
+    
+    const link = document.createElement('a');
+    link.href = qrDataUrl;
+    link.download = `upi-payment-qr-${upiId}-${amount}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "QR Code Downloaded",
+      description: "The payment QR code has been downloaded successfully."
+    });
+  };
+
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(embedCode);
@@ -77,6 +136,8 @@ const UpiGatewayGenerator: React.FC = () => {
     setShowPreview(false);
     setEmbedCode('');
     setCopied(false);
+    setQrDataUrl('');
+    setShowQrCode(false);
   };
 
   return (
@@ -88,7 +149,7 @@ const UpiGatewayGenerator: React.FC = () => {
             UPI Payment Gateway Generator
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Create embeddable payment interfaces for your website with UPI deep links
+            Create embeddable payment interfaces and QR codes for your website with UPI deep links
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -130,19 +191,27 @@ const UpiGatewayGenerator: React.FC = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-2">
-            <Button onClick={generateEmbedCode} className="flex-1">
+            <Button onClick={generatePaymentGateway} className="flex-1">
               <Code className="h-4 w-4 mr-2" />
               Generate Payment Gateway
             </Button>
             
-            {showPreview && (
-              <Button variant="outline" onClick={() => setShowPreview(!showPreview)}>
+            <Button onClick={generateQrCode} variant="outline" className="flex-1">
+              <QrCode className="h-4 w-4 mr-2" />
+              Generate QR Code
+            </Button>
+            
+            {(showPreview || showQrCode) && (
+              <Button variant="outline" onClick={() => {
+                setShowPreview(!showPreview);
+                setShowQrCode(!showQrCode);
+              }}>
                 <Eye className="h-4 w-4 mr-2" />
-                {showPreview ? 'Hide' : 'Show'} Preview
+                {(showPreview || showQrCode) ? 'Hide' : 'Show'} Preview
               </Button>
             )}
             
-            {embedCode && (
+            {(embedCode || qrDataUrl) && (
               <Button variant="outline" onClick={resetForm}>
                 Reset
               </Button>
@@ -150,6 +219,36 @@ const UpiGatewayGenerator: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* QR Code Display */}
+      {showQrCode && qrDataUrl && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <QrCode className="h-5 w-5 text-green-600" />
+              Payment QR Code
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Scan this QR code with any UPI app to make the payment
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center space-y-4">
+            <div className="qr-container p-6 bg-white rounded-xl shadow-md">
+              <img src={qrDataUrl} alt="UPI Payment QR Code" className="w-64 h-64" />
+            </div>
+            
+            <div className="text-center space-y-2">
+              <h3 className="font-medium">Pay ₹{amount} to {payeeName}</h3>
+              <p className="text-sm text-muted-foreground">{upiId}</p>
+            </div>
+            
+            <Button onClick={downloadQrCode} className="flex items-center gap-2">
+              <Download className="h-4 w-4" />
+              Download QR Code
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Live Preview */}
       {showPreview && embedCode && (
