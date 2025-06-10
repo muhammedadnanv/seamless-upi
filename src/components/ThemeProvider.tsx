@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { BrandingProvider } from '@/context/BrandingContext';
 
 type Theme = 'dark' | 'light' | 'system';
 
@@ -85,7 +86,9 @@ export function ThemeProvider({
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>
-      {children}
+      <BrandingProvider>
+        {children}
+      </BrandingProvider>
     </ThemeProviderContext.Provider>
   );
 }
