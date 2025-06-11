@@ -59,10 +59,7 @@ const Index: React.FC = () => {
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           {/* Desktop/Tablet Navigation */}
-          <TabsList className={`
-            hidden lg:grid w-full grid-cols-6 mb-6 sm:mb-8 h-auto p-1
-            ${isMobile ? 'grid-cols-3' : 'lg:grid-cols-6'}
-          `}>
+          <TabsList className="hidden lg:grid w-full grid-cols-6 mb-6 sm:mb-8 h-auto p-1">
             {tabs.map((tab) => (
               <TabsTrigger 
                 key={tab.value}
@@ -76,21 +73,20 @@ const Index: React.FC = () => {
             ))}
           </TabsList>
 
-          {/* Mobile Navigation - Horizontal Scroll */}
+          {/* Mobile Navigation - Horizontal Scroll with proper TabsList */}
           <div className="lg:hidden mb-6 -mx-3 sm:-mx-4">
-            <div className="flex overflow-x-auto gap-2 px-3 sm:px-4 pb-2 scrollbar-hide">
+            <TabsList className="flex w-max gap-2 px-3 sm:px-4 pb-2 bg-transparent p-0 h-auto">
               {tabs.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  onClick={() => handleTabChange(tab.value)}
-                  className="flex items-center gap-2 whitespace-nowrap px-4 py-3 min-w-max text-sm font-medium transition-all"
+                  className="flex items-center gap-2 whitespace-nowrap px-4 py-3 min-w-max text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground"
                 >
                   <tab.icon className="h-4 w-4" />
                   <span>{tab.shortLabel}</span>
                 </TabsTrigger>
               ))}
-            </div>
+            </TabsList>
           </div>
 
           <TabsContent value="upi" className="mt-0">
