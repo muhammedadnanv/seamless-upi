@@ -15,10 +15,11 @@ export default {
 			center: true,
 			padding: {
 				DEFAULT: '1rem',
-				sm: '2rem',
-				lg: '4rem',
-				xl: '5rem',
-				'2xl': '6rem',
+				sm: '1.5rem',
+				md: '2rem',
+				lg: '3rem',
+				xl: '4rem',
+				'2xl': '5rem',
 			},
 			screens: {
 				'2xl': '1400px'
@@ -85,6 +86,9 @@ export default {
 				'safe-area-inset-bottom': 'env(safe-area-inset-bottom)',
 				'safe-area-inset-left': 'env(safe-area-inset-left)',
 				'safe-area-inset-right': 'env(safe-area-inset-right)',
+				'touch': '44px', // Standard touch target size
+				'touch-sm': '40px',
+				'touch-lg': '48px',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -126,6 +130,9 @@ export default {
 				// Orientation queries
 				'landscape': { 'raw': '(orientation: landscape)' },
 				'portrait': { 'raw': '(orientation: portrait)' },
+				// Touch-specific queries
+				'touch': { 'raw': '(hover: none) and (pointer: coarse)' },
+				'no-touch': { 'raw': '(hover: hover) and (pointer: fine)' },
 			},
 			keyframes: {
 				'accordion-down': {
@@ -228,6 +235,30 @@ export default {
 						opacity: '1',
 						transform: 'scale(1)'
 					}
+				},
+				'mobile-bounce': {
+					'0%, 100%': {
+						transform: 'translateY(0)'
+					},
+					'50%': {
+						transform: 'translateY(-5px)'
+					}
+				},
+				'slide-in-left': {
+					'0%': {
+						transform: 'translateX(-100%)'
+					},
+					'100%': {
+						transform: 'translateX(0)'
+					}
+				},
+				'slide-in-right': {
+					'0%': {
+						transform: 'translateX(100%)'
+					},
+					'100%': {
+						transform: 'translateX(0)'
+					}
 				}
 			},
 			animation: {
@@ -243,68 +274,56 @@ export default {
 				// Mobile-optimized animations
 				'mobile-slide-up': 'mobile-slide-up 0.4s ease-out',
 				'mobile-fade-in': 'mobile-fade-in 0.3s ease-out',
-			},
-			animationDelay: {
-				'75': '75ms',
-				'100': '100ms',
-				'150': '150ms',
-				'200': '200ms',
-				'300': '300ms',
-				'500': '500ms',
-				'700': '700ms',
-				'1000': '1000ms',
-				'2000': '2000ms',
-				'4000': '4000ms'
+				'mobile-bounce': 'mobile-bounce 1s ease-in-out infinite',
+				'slide-in-left': 'slide-in-left 0.3s ease-out',
+				'slide-in-right': 'slide-in-right 0.3s ease-out',
 			},
 			// Mobile-specific utilities
 			minHeight: {
 				'touch': '44px',
+				'touch-sm': '40px',
+				'touch-lg': '48px',
 				'mobile-screen': '100svh',
+				'mobile-screen-dynamic': '100dvh',
 			},
 			minWidth: {
 				'touch': '44px',
+				'touch-sm': '40px',
+				'touch-lg': '48px',
 			},
 			maxHeight: {
 				'mobile-screen': '100svh',
+				'mobile-screen-dynamic': '100dvh',
+			},
+			// Enhanced mobile-specific spacing
+			gap: {
+				'mobile': '0.75rem',
+				'mobile-sm': '0.5rem',
+				'mobile-lg': '1rem',
 			}
 		}
 	},
 	plugins: [
 		require("tailwindcss-animate"),
-		function({ addUtilities }) {
+		function({ addUtilities, theme }) {
 			const newUtilities = {
-				// Animation delay utilities
-				'.animation-delay-75': {
-					'animation-delay': '75ms',
+				// Touch target utilities
+				'.touch-target': {
+					'min-height': theme('spacing.touch'),
+					'min-width': theme('spacing.touch'),
+					'touch-action': 'manipulation',
 				},
-				'.animation-delay-100': {
-					'animation-delay': '100ms',
+				'.touch-target-sm': {
+					'min-height': theme('spacing.touch-sm'),
+					'min-width': theme('spacing.touch-sm'),
+					'touch-action': 'manipulation',
 				},
-				'.animation-delay-150': {
-					'animation-delay': '150ms',
+				'.touch-target-lg': {
+					'min-height': theme('spacing.touch-lg'),
+					'min-width': theme('spacing.touch-lg'),
+					'touch-action': 'manipulation',
 				},
-				'.animation-delay-200': {
-					'animation-delay': '200ms',
-				},
-				'.animation-delay-300': {
-					'animation-delay': '300ms',
-				},
-				'.animation-delay-500': {
-					'animation-delay': '500ms',
-				},
-				'.animation-delay-700': {
-					'animation-delay': '700ms',
-				},
-				'.animation-delay-1000': {
-					'animation-delay': '1000ms',
-				},
-				'.animation-delay-2000': {
-					'animation-delay': '2000ms',
-				},
-				'.animation-delay-4000': {
-					'animation-delay': '4000ms',
-				},
-				// Mobile-specific utilities
+				// Mobile interaction utilities
 				'.touch-manipulation': {
 					'touch-action': 'manipulation',
 				},
@@ -340,11 +359,66 @@ export default {
 				'.h-screen-mobile': {
 					'height': '100svh',
 				},
+				'.h-screen-mobile-dynamic': {
+					'height': '100dvh',
+				},
 				'.min-h-screen-mobile': {
 					'min-height': '100svh',
 				},
+				'.min-h-screen-mobile-dynamic': {
+					'min-height': '100dvh',
+				},
 				'.max-h-screen-mobile': {
 					'max-height': '100svh',
+				},
+				'.max-h-screen-mobile-dynamic': {
+					'max-height': '100dvh',
+				},
+				// Mobile text sizing utilities
+				'.text-mobile-safe': {
+					'font-size': '16px', // Prevents zoom on iOS
+				},
+				// Mobile flex utilities
+				'.flex-mobile-col': {
+					'display': 'flex',
+					'flex-direction': 'column',
+					'@media (min-width: 640px)': {
+						'flex-direction': 'row',
+					},
+				},
+				'.flex-mobile-row': {
+					'display': 'flex',
+					'flex-direction': 'row',
+					'@media (max-width: 639px)': {
+						'flex-direction': 'column',
+					},
+				},
+				// Mobile grid utilities
+				'.grid-mobile': {
+					'display': 'grid',
+					'grid-template-columns': '1fr',
+					'@media (min-width: 640px)': {
+						'grid-template-columns': 'repeat(2, 1fr)',
+					},
+					'@media (min-width: 1024px)': {
+						'grid-template-columns': 'repeat(3, 1fr)',
+					},
+				},
+				// Mobile scroll utilities
+				'.scroll-mobile': {
+					'overflow-x': 'auto',
+					'-webkit-overflow-scrolling': 'touch',
+					'overscroll-behavior-x': 'contain',
+				},
+				// Mobile button utilities
+				'.btn-mobile': {
+					'min-height': theme('spacing.touch'),
+					'min-width': theme('spacing.touch'),
+					'padding': `${theme('spacing.3')} ${theme('spacing.4')}`,
+					'touch-action': 'manipulation',
+					'&:active': {
+						'transform': 'scale(0.98)',
+					},
 				},
 			}
 			addUtilities(newUtilities)

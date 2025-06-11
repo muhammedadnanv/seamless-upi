@@ -99,6 +99,8 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     /* Prevent horizontal scrolling on mobile */
     overflow-x: hidden;
+    /* Enable smooth scrolling */
+    scroll-behavior: smooth;
   }
 
   /* Enhanced mobile scrollbar */
@@ -152,6 +154,16 @@
 }
 
 @layer components {
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   .glass-card {
     @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-white/20 dark:border-gray-700/30 shadow-lg;
   }
@@ -268,6 +280,74 @@
   .mobile-scroll {
     @apply overflow-y-auto max-h-[calc(100vh-theme(spacing.16))] overscroll-contain;
   }
+
+  /* Mobile-optimized cards with proper touch targets */
+  .mobile-optimized-card {
+    @apply 
+      w-full 
+      p-4 sm:p-6 
+      rounded-xl 
+      border 
+      bg-card 
+      text-card-foreground 
+      shadow-sm 
+      transition-all 
+      duration-300 
+      hover:shadow-lg 
+      active:scale-[0.98] 
+      touch-manipulation;
+  }
+
+  /* Mobile navigation tabs */
+  .mobile-tab-trigger {
+    @apply 
+      inline-flex 
+      items-center 
+      justify-center 
+      whitespace-nowrap 
+      rounded-sm 
+      px-3 py-2 
+      text-sm 
+      font-medium 
+      ring-offset-background 
+      transition-all 
+      focus-visible:outline-none 
+      focus-visible:ring-2 
+      focus-visible:ring-ring 
+      focus-visible:ring-offset-2 
+      disabled:pointer-events-none 
+      disabled:opacity-50 
+      data-[state=active]:bg-background 
+      data-[state=active]:text-foreground 
+      data-[state=active]:shadow-sm
+      min-h-[44px]
+      touch-manipulation;
+  }
+
+  /* Enhanced button component for mobile */
+  .mobile-enhanced-button {
+    @apply 
+      inline-flex 
+      items-center 
+      justify-center 
+      whitespace-nowrap 
+      rounded-md 
+      text-sm 
+      font-medium 
+      ring-offset-background 
+      transition-colors 
+      focus-visible:outline-none 
+      focus-visible:ring-2 
+      focus-visible:ring-ring 
+      focus-visible:ring-offset-2 
+      disabled:pointer-events-none 
+      disabled:opacity-50
+      min-h-[44px]
+      min-w-[44px]
+      px-4 py-2
+      touch-manipulation
+      active:scale-95;
+  }
 }
 
 /* Enhanced animations with mobile performance considerations */
@@ -294,6 +374,11 @@
 @keyframes mobile-bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
+}
+
+@keyframes mobile-scale-in {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .shimmer {
@@ -330,6 +415,10 @@
     animation: mobile-bounce 1s ease-in-out infinite;
   }
 
+  .mobile-scale-in {
+    animation: mobile-scale-in 0.3s ease-out;
+  }
+
   /* Reduce animation intensity on mobile for better performance */
   .animate-blob {
     animation-duration: 10s;
@@ -342,6 +431,12 @@
 
   .touch\:scale-105:active {
     transform: scale(1.05);
+  }
+
+  /* Improve mobile interaction feedback */
+  .mobile-press-feedback:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease-in-out;
   }
 }
 
@@ -362,12 +457,22 @@
     margin-right: 8px;
     margin-bottom: 8px;
   }
+
+  /* Enhanced mobile scroll behavior */
+  .mobile-scroll-container {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
 }
 
 /* Mobile landscape optimizations */
 @media (max-height: 500px) and (orientation: landscape) {
   .mobile-landscape-compact {
     @apply py-2 space-y-2;
+  }
+
+  .mobile-landscape-header {
+    @apply h-12;
   }
 }
 
@@ -398,6 +503,12 @@
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
   }
+
+  /* Remove default iOS safari bottom bar spacing in PWA mode */
+  .pwa-full-height {
+    height: 100vh;
+    height: 100dvh;
+  }
 }
 
 /* Accessibility improvements for mobile */
@@ -414,4 +525,81 @@
   .auto-dark-mobile {
     @apply bg-gray-900 text-gray-100;
   }
+}
+
+/* Safe area utilities for notched devices */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Mobile viewport fixes */
+.mobile-viewport-fix {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+}
+
+/* Improved mobile form styling */
+.mobile-form-field {
+  @apply w-full min-h-[44px] px-3 py-2 text-base border rounded-md transition-colors;
+}
+
+.mobile-form-field:focus {
+  @apply ring-2 ring-ring ring-offset-2 border-ring;
+}
+
+/* Mobile-optimized loading states */
+.mobile-loading-skeleton {
+  @apply animate-pulse bg-muted rounded;
+}
+
+/* Better mobile table responsiveness */
+.mobile-table-wrapper {
+  @apply overflow-x-auto -mx-3 sm:mx-0;
+}
+
+.mobile-table {
+  @apply min-w-full text-sm;
+}
+
+/* Mobile-friendly modal/dialog positioning */
+.mobile-dialog {
+  @apply 
+    fixed 
+    left-2 right-2 
+    top-4 
+    bottom-4 
+    sm:left-auto 
+    sm:right-auto 
+    sm:top-1/2 
+    sm:left-1/2 
+    sm:-translate-x-1/2 
+    sm:-translate-y-1/2 
+    sm:bottom-auto 
+    sm:max-w-lg;
+}
+
+/* Enhanced touch feedback */
+.touch-feedback {
+  @apply active:bg-muted/50 transition-colors duration-75;
+}
+
+/* Mobile-optimized dropdown positioning */
+.mobile-dropdown {
+  @apply 
+    w-[calc(100vw-2rem)] 
+    sm:w-auto 
+    max-h-[50vh] 
+    overflow-y-auto;
 }
