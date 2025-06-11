@@ -6,6 +6,7 @@ import { QrCode, Sun, Moon, Bell } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import { useBranding } from '@/hooks/use-branding';
 import NotificationBell from '@/components/NotificationBell';
+import GlobalNavigation from '@/components/GlobalNavigation';
 import { useResponsive } from '@/hooks/use-responsive';
 
 const MobileHeader: React.FC = () => {
@@ -51,8 +52,18 @@ const MobileHeader: React.FC = () => {
           </Badge>
         </div>
 
+        {/* Navigation - Hidden on mobile, shown on larger screens */}
+        <div className="hidden lg:flex">
+          <GlobalNavigation />
+        </div>
+
         {/* Actions Section */}
         <div className="flex items-center gap-1 sm:gap-2">
+          {/* Mobile Navigation */}
+          <div className="lg:hidden">
+            <GlobalNavigation />
+          </div>
+          
           <NotificationBell />
           
           <Button
