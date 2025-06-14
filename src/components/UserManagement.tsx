@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, UserPlus, Mail, ShieldCheck } from 'lucide-react';
+import { Users, UserPlus, Mail, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { useAuth, UserRole } from '@/context/AuthContext';
 import { toast } from '@/components/ui/use-toast';
 import {
@@ -22,6 +22,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import ConfirmationDialog from '@/components/ConfirmationDialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface AppUser {
   id: string;
@@ -65,31 +68,74 @@ const UserManagement: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [editingUser, setEditingUser] = useState<AppUser | null>(null);
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { userData } = useAuth();
+
+  // Protective check for permissions
+  const canEditUsers = userData?.role === 'owner';
+
+  const handleRoleChangeRequest = (user: AppUser) => {
+    if (!canEditUsers) {
+      toast({
+        title: 'Access denied',
+        description: 'You do not have permission to edit user roles.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (user.auth_id === userData?.id) {
+      toast({
+        title: 'Cannot edit own role',
+        description: 'You cannot change your own role.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setEditingUser(user);
+    setSelectedRole(user.role);
+  };
+
+  const handleRoleChangeConfirm = () => {
+    if (!editingUser || !selectedRole) return;
+    setShowConfirmDialog(true);
+  };
 
   const handleRoleChange = async () => {
     if (!editingUser || !selectedRole) return;
 
+    setLoading(true);
+    setError(null);
+
     try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       // Update user role locally
       setUsers(users.map(user => 
         user.id === editingUser.id ? { ...user, role: selectedRole } : user
       ));
 
       toast({
-        title: 'Role updated',
+        title: 'Role updated successfully',
         description: `${editingUser.name}'s role has been updated to ${selectedRole}.`,
       });
 
       setEditingUser(null);
       setSelectedRole(null);
+      setShowConfirmDialog(false);
     } catch (error) {
       console.error('Error updating role:', error);
+      setError('Failed to update user role. Please try again.');
       toast({
         title: 'Failed to update role',
         description: 'Please try again later.',
         variant: 'destructive',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -108,6 +154,21 @@ const UserManagement: React.FC = () => {
     }
   };
 
+  const getRoleDescription = (role: UserRole) => {
+    switch (role) {
+      case 'owner':
+        return 'Full access to all features and user management';
+      case 'manager':
+        return 'Can manage transactions and view reports';
+      case 'cashier':
+        return 'Can process payments and basic operations';
+      case 'viewer':
+        return 'Read-only access to view data';
+      default:
+        return '';
+    }
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -115,11 +176,26 @@ const UserManagement: React.FC = () => {
           <Users className="h-5 w-5 text-upi-blue" />
           User Management
         </CardTitle>
+        {!canEditUsers && (
+          <Alert>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              You have read-only access to user information.
+            </AlertDescription>
+          </Alert>
+        )}
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
         {loading ? (
           <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-upi-blue"></div>
+            <LoadingSpinner size="lg" text="Loading users..." />
           </div>
         ) : (
           <>
@@ -130,9 +206,9 @@ const UserManagement: React.FC = () => {
             ) : (
               <div className="space-y-4">
                 {users.map((user) => (
-                  <div key={user.id} className="border rounded-lg p-4">
+                  <div key={user.id} className="border rounded-lg p-4 hover:bg-accent/50 transition-colors">
                     <div className="flex justify-between items-start mb-2">
-                      <div>
+                      <div className="flex-1">
                         <p className="font-bold text-lg flex items-center gap-2">
                           {user.name}
                           {user.auth_id === userData?.id && (
@@ -141,9 +217,12 @@ const UserManagement: React.FC = () => {
                             </span>
                           )}
                         </p>
-                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                        <p className="text-sm text-muted-foreground flex items-center gap-1 mb-1">
                           <Mail className="h-3 w-3" />
                           {user.email}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {getRoleDescription(user.role)}
                         </p>
                       </div>
                       <Badge className={getRoleBadgeColor(user.role)}>
@@ -151,16 +230,13 @@ const UserManagement: React.FC = () => {
                       </Badge>
                     </div>
                     
-                    {/* Only show edit button if current user is owner and not editing themselves */}
-                    {userData?.role === 'owner' && userData.id !== user.auth_id && (
+                    {canEditUsers && userData.id !== user.auth_id && (
                       <Button
                         size="sm"
                         variant="outline"
                         className="mt-2 text-xs"
-                        onClick={() => {
-                          setEditingUser(user);
-                          setSelectedRole(user.role);
-                        }}
+                        onClick={() => handleRoleChangeRequest(user)}
+                        disabled={loading}
                       >
                         <ShieldCheck className="h-3.5 w-3.5 mr-1" />
                         Change Role
@@ -173,12 +249,12 @@ const UserManagement: React.FC = () => {
           </>
         )}
 
-        <Dialog open={!!editingUser} onOpenChange={(open) => !open && setEditingUser(null)}>
+        <Dialog open={!!editingUser && !showConfirmDialog} onOpenChange={(open) => !open && setEditingUser(null)}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Change User Role</DialogTitle>
               <DialogDescription>
-                Update the role for {editingUser?.name}
+                Update the role for {editingUser?.name}. This will change their access permissions.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
@@ -187,26 +263,62 @@ const UserManagement: React.FC = () => {
                 <Select
                   value={selectedRole || undefined}
                   onValueChange={(value) => setSelectedRole(value as UserRole)}
+                  disabled={loading}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="cashier">Cashier</SelectItem>
-                    <SelectItem value="viewer">Viewer</SelectItem>
+                    <SelectItem value="manager">
+                      <div>
+                        <div className="font-medium">Manager</div>
+                        <div className="text-xs text-muted-foreground">Can manage transactions and view reports</div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="cashier">
+                      <div>
+                        <div className="font-medium">Cashier</div>
+                        <div className="text-xs text-muted-foreground">Can process payments and basic operations</div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="viewer">
+                      <div>
+                        <div className="font-medium">Viewer</div>
+                        <div className="text-xs text-muted-foreground">Read-only access to view data</div>
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setEditingUser(null)}>
+              <Button 
+                variant="outline" 
+                onClick={() => setEditingUser(null)}
+                disabled={loading}
+              >
                 Cancel
               </Button>
-              <Button onClick={handleRoleChange}>Save Changes</Button>
+              <Button 
+                onClick={handleRoleChangeConfirm}
+                disabled={!selectedRole || selectedRole === editingUser?.role || loading}
+              >
+                {loading ? <LoadingSpinner size="sm" /> : 'Save Changes'}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        <ConfirmationDialog
+          open={showConfirmDialog}
+          onOpenChange={setShowConfirmDialog}
+          onConfirm={handleRoleChange}
+          title="Confirm Role Change"
+          description={`Are you sure you want to change ${editingUser?.name}'s role to ${selectedRole}? This will immediately update their access permissions.`}
+          confirmText="Yes, Change Role"
+          cancelText="Cancel"
+          variant="default"
+        />
       </CardContent>
     </Card>
   );
