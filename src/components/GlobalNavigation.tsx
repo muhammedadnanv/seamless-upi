@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Home, Settings, Widget, ArrowRight } from 'lucide-react';
+import { Home, Settings, Grid3X3, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useResponsive } from '@/hooks/use-responsive';
 
@@ -29,7 +29,7 @@ const navigationItems: NavigationItem[] = [
   {
     href: '/widget',
     label: 'Widget Demo',
-    icon: Widget,
+    icon: Grid3X3,
     description: 'Widget demonstration'
   }
 ];
