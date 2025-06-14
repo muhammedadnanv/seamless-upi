@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Home, Settings, Grid3X3, ArrowRight } from 'lucide-react';
+import { Home, Settings, Grid3X3, ArrowRight, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useResponsive } from '@/hooks/use-responsive';
 
@@ -37,20 +37,42 @@ const navigationItems: NavigationItem[] = [
 interface GlobalNavigationProps {
   variant?: 'header' | 'footer' | 'breadcrumb';
   className?: string;
+  showBackButton?: boolean;
 }
 
 const GlobalNavigation: React.FC<GlobalNavigationProps> = ({ 
   variant = 'header',
-  className 
+  className,
+  showBackButton = false
 }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { isMobile } = useResponsive();
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
 
   if (variant === 'breadcrumb') {
     const currentItem = navigationItems.find(item => item.href === location.pathname);
     
     return (
       <nav className={cn("flex items-center space-x-2 text-sm text-muted-foreground", className)}>
+        {showBackButton && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-3 w-3" />
+            <span className="hidden sm:inline">Back</span>
+          </Button>
+        )}
         <Link to="/" className="hover:text-foreground transition-colors">
           Home
         </Link>
@@ -89,6 +111,17 @@ const GlobalNavigation: React.FC<GlobalNavigationProps> = ({
   // Default header variant
   return (
     <nav className={cn("flex items-center space-x-1 sm:space-x-2", className)}>
+      {showBackButton && (
+        <Button
+          variant="ghost"
+          size={isMobile ? "sm" : "default"}
+          onClick={handleBack}
+          className="flex items-center gap-1"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {!isMobile && <span>Back</span>}
+        </Button>
+      )}
       {navigationItems.map((item) => {
         const isActive = location.pathname === item.href;
         

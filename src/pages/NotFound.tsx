@@ -16,6 +16,14 @@ const NotFound = () => {
     );
   }, [location.pathname]);
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = '/';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
       <Header />
@@ -34,7 +42,7 @@ const NotFound = () => {
           
           <div className="flex flex-col sm:flex-row gap-4">
             <Button 
-              onClick={() => window.history.back()}
+              onClick={handleBack}
               variant="outline"
               className="flex items-center gap-2"
             >

@@ -11,6 +11,7 @@ interface PageLayoutProps {
   description?: string;
   className?: string;
   showFooterNavigation?: boolean;
+  showBackButton?: boolean;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '4xl' | '6xl' | '7xl' | 'full';
 }
 
@@ -20,6 +21,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
   description,
   className,
   showFooterNavigation = true,
+  showBackButton = true,
   maxWidth = '7xl'
 }) => {
   return (

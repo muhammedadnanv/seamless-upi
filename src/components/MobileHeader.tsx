@@ -2,23 +2,50 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { QrCode, Sun, Moon, Bell } from 'lucide-react';
+import { QrCode, Sun, Moon, ArrowLeft } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import { useBranding } from '@/hooks/use-branding';
 import NotificationBell from '@/components/NotificationBell';
 import GlobalNavigation from '@/components/GlobalNavigation';
 import { useResponsive } from '@/hooks/use-responsive';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const MobileHeader: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const { branding } = useBranding();
   const { isMobile } = useResponsive();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Show back button on all pages except landing page
+  const showBackButton = location.pathname !== '/';
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 lg:px-6">
-        {/* Logo Section */}
+        {/* Logo Section with Back Button */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Back Button for Mobile */}
+          {isMobile && showBackButton && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBack}
+              className="h-8 w-8 rounded-full"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="sr-only">Go back</span>
+            </Button>
+          )}
+          
           <div className="flex items-center gap-2">
             {branding.logo.url ? (
               <img 
@@ -54,7 +81,7 @@ const MobileHeader: React.FC = () => {
 
         {/* Navigation - Hidden on mobile, shown on larger screens */}
         <div className="hidden lg:flex">
-          <GlobalNavigation />
+          <GlobalNavigation showBackButton={!isMobile && showBackButton} />
         </div>
 
         {/* Actions Section */}
