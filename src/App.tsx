@@ -27,13 +27,6 @@ const queryClient = new QueryClient({
         return failureCount < 3;
       },
       staleTime: 5 * 60 * 1000, // 5 minutes
-      onError: (error) => {
-        console.error('Query error:', error);
-        // Redirect to 404 if it's a page loading error
-        if (error instanceof Error && error.message.includes('404')) {
-          window.location.href = '/404-not-found';
-        }
-      },
     },
   },
 });
