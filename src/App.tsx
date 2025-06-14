@@ -13,6 +13,8 @@ import { NotificationProvider } from "@/context/NotificationContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import RouteErrorBoundary from "@/components/RouteErrorBoundary";
+import RouteGuard from "@/components/RouteGuard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,6 +27,13 @@ const queryClient = new QueryClient({
         return failureCount < 3;
       },
       staleTime: 5 * 60 * 1000, // 5 minutes
+      onError: (error) => {
+        console.error('Query error:', error);
+        // Redirect to 404 if it's a page loading error
+        if (error instanceof Error && error.message.includes('404')) {
+          window.location.href = '/404-not-found';
+        }
+      },
     },
   },
 });
@@ -41,12 +50,29 @@ const App = () => (
               <AuthProvider>
                 <NotificationProvider>
                   <BrowserRouter>
-                    <Routes>
-                      <Route path="/" element={<Landing />} />
-                      <Route path="/app" element={<Index />} />
-                      <Route path="/widget" element={<DonatingWidgetDemo />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
+                    <RouteErrorBoundary fallbackTo404={true}>
+                      <Routes>
+                        <Route path="/" element={
+                          <RouteGuard>
+                            <Landing />
+                          </RouteGuard>
+                        } />
+                        <Route path="/app" element={
+                          <RouteGuard>
+                            <Index />
+                          </RouteGuard>
+                        } />
+                        <Route path="/widget" element={
+                          <RouteGuard>
+                            <DonatingWidgetDemo />
+                          </RouteGuard>
+                        } />
+                        {/* Explicit 404 route */}
+                        <Route path="/404-not-found" element={<NotFound />} />
+                        {/* Catch-all route that redirects to 404 */}
+                        <Route path="*" element={<Navigate to="/404-not-found" replace />} />
+                      </Routes>
+                    </RouteErrorBoundary>
                   </BrowserRouter>
                 </NotificationProvider>
               </AuthProvider>

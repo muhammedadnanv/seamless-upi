@@ -1,27 +1,47 @@
 
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import ResponsiveContainer from "@/components/ResponsiveContainer";
 import { Button } from "@/components/ui/button";
-import { Home, ArrowLeft } from "lucide-react";
+import { Home, ArrowLeft, RefreshCw } from "lucide-react";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {
     console.error(
       "404 Error: User attempted to access non-existent route:",
       location.pathname
     );
-  }, [location.pathname]);
+
+    // Auto-redirect countdown
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          navigate('/', { replace: true });
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [location.pathname, navigate]);
 
   const handleBack = () => {
     if (window.history.length > 1) {
-      window.history.back();
+      navigate(-1);
     } else {
-      window.location.href = '/';
+      navigate('/');
     }
+  };
+
+  const handleRefresh = () => {
+    window.location.reload();
   };
 
   return (
@@ -35,8 +55,11 @@ const NotFound = () => {
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
               Oops! Page not found
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-md">
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-4 max-w-md">
               The page you're looking for doesn't exist or has been moved.
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+              You'll be automatically redirected to the homepage in <span className="font-semibold text-primary">{countdown}</span> seconds.
             </p>
           </div>
           
@@ -49,14 +72,30 @@ const NotFound = () => {
               <ArrowLeft className="h-4 w-4" />
               Go Back
             </Button>
+
+            <Button 
+              onClick={handleRefresh}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Refresh Page
+            </Button>
             
             <Button 
-              onClick={() => window.location.href = '/'}
+              onClick={() => navigate('/')}
               className="flex items-center gap-2"
             >
               <Home className="h-4 w-4" />
               Return to Home
             </Button>
+          </div>
+
+          {/* Additional help text */}
+          <div className="mt-8 p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg max-w-md">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              If you believe this is an error, please try refreshing the page or contact support.
+            </p>
           </div>
         </div>
       </ResponsiveContainer>
